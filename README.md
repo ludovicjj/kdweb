@@ -6,4 +6,4 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] La [CLI](https://symfony.com/download) de symfony
 - [x] Le [maker bundle](https://symfony.com/doc/current/bundles/SymfonyMakerBundle/index.html)
 - [x] [Doctrine ORM](https://symfony.com/doc/current/doctrine.html)
-- [x] [Datafixtures](https://symfony.com/doc/current/bundles/DoctrineFixturesBundle/index.html) et [faker](https://github.com/fzaninotto/Faker)
+- [x] [DataFixtures](https://symfony.com/doc/current/bundles/DoctrineFixturesBundle/index.html) et [alice](https://github.com/nelmio/alice)
