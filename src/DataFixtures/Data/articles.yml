@@ -1,0 +1,6 @@
+App\Entity\Article:
+    article{1..6}:
+        title: 'article <current()>'
+        slug: 'article-<current()>'
+        content: 'hello world !'
+        isPublished: false
