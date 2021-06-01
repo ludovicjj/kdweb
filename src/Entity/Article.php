@@ -17,41 +17,49 @@ class Article
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @var int $id
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @var string $title
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
+     * @var string $content
      */
     private $content;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @var string $slug
      */
     private $slug;
 
     /**
      * @ORM\Column(type="datetime_immutable")
+     * @var DateTimeImmutable $createdAt
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @var DateTimeImmutable|null $publishedAt
      */
     private $publishedAt;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @var DateTimeInterface|null $editedAt
      */
     private $editedAt;
 
     /**
      * @ORM\Column(type="boolean")
+     * @var boolean $isPublished
      */
     private $isPublished;
 
