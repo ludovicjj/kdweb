@@ -21,6 +21,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.4",
+        "nelmio/alice": "^3.8",
         "symfony/maker-bundle": "^1.31"
     },
     "config": {
