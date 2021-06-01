@@ -9,10 +9,19 @@ use DateTimeImmutable;
 use DateTime;
 use Nelmio\Alice\Loader\NativeLoader;
 use Nelmio\Alice\Throwable\LoadingThrowable;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ArticleFixtures extends Fixture
 {
     const DATA_ENTRY_POINT = __DIR__.'/data/articles.yml';
+
+    /** @var SluggerInterface $slugger */
+    private $slugger;
+
+    public function __construct(SluggerInterface $slugger)
+    {
+        $this->slugger = $slugger;
+    }
 
     public function load(ObjectManager $manager)
     {
@@ -24,7 +33,10 @@ class ArticleFixtures extends Fixture
                     'dateObject' => $dateObject,
                     'dateString' => $dateString
                 ] = $this->generateRandomDateBetweenRange('01-01-2020', '01-06-2021');
-                $object->setSlug($object->getSlug() . "-{$dateString}");
+
+                $title = $object->getTitle();
+                $slug = $this->slugger->slug(strtolower($title)) . '-' . $dateString;
+                $object->setSlug($slug);
                 $object->setCreatedAt($dateObject);
                 $manager->persist($object);
             }
