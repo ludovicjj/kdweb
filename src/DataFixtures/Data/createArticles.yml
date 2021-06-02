@@ -1,0 +1,11 @@
+App\Entity\Article:
+    article1:
+        title: '<sentence()>'
+        slug: 'article-1'
+        content: '<paragraph()>'
+        isPublished: false
+
+App\Entity\Author:
+    author1:
+        name: 'bob'
+        addArticle: '@article1'

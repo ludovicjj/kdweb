@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Article;
+use App\Entity\Author;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use DateTimeImmutable;
@@ -14,7 +15,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ArticleFixtures extends Fixture
 {
-    const DATA_ENTRY_POINT = __DIR__.'/data/articles.yml';
+    const DATA_ENTRY_POINT = __DIR__.'/data/createArticles.yml';
 
     /** @var SluggerInterface $slugger */
     private $slugger;
@@ -26,24 +27,26 @@ class ArticleFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        try {
-            $objectSet = $this->getNativeLoader()->loadFile(self::DATA_ENTRY_POINT);
-            /** @var Article $object */
-            foreach ($objectSet->getObjects() as $object) {
-                [
-                    'dateObject' => $dateObject,
-                    'dateString' => $dateString
-                ] = $this->generateRandomDateBetweenRange('01-01-2020', '01-06-2021');
-                /** @var string $title */
-                $title = $object->getTitle();
-                $slug = $this->slugger->slug(strtolower($title)) . '-' . $dateString;
-                $object->setSlug($slug);
-                $object->setCreatedAt($dateObject);
-                $manager->persist($object);
-            }
-        } catch (LoadingThrowable $e) {
-        }
+        $objectSet = $this->getNativeLoader()->loadFile(self::DATA_ENTRY_POINT);
 
+        foreach ($objectSet->getObjects() as $object) {
+            if ($object instanceof Article) {
+                $randomDate = $this->generateRandomDateBetweenRange('01-01-2020', '01-06-2021');
+
+                $title = $object->getTitle();
+                if ($title === null) {
+                    throw new HttpException(
+                        400,
+                        sprintf('Invalid Fixture. %s required value to property title', get_class($object))
+                    );
+                }
+                $slug = $this->slugger->slug(strtolower($title)) . '-' . $randomDate['dateString'];
+                $object->setCreatedAt($randomDate['dateObject']);
+                $object->setSlug($slug);
+            }
+
+            $manager->persist($object);
+        }
         $manager->flush();
     }
 
@@ -58,7 +61,8 @@ class ArticleFixtures extends Fixture
     private function generateRandomDateBetweenRange(string $start, string $end): array
     {
         $startDate = DateTime::createFromFormat('d-m-Y', $start);
-        $endDate = DateTime::createFromFormat('d-m-y', $end);
+        $endDate = DateTime::createFromFormat('d-m-Y', $end);
+
         if (!$startDate || !$endDate) {
             throw new HttpException(400, 'Parameters invalid, expected date with format d-m-Y');
         }

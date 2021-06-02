@@ -19,7 +19,8 @@
         "symfony/proxy-manager-bridge": "5.2.*",
         "symfony/string": "5.2.*",
         "symfony/translation": "5.2.*",
-        "symfony/yaml": "5.2.*"
+        "symfony/yaml": "5.2.*",
+        "ext-gd": "*"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.4",

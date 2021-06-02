@@ -18,4 +18,11 @@ class HomeController extends AbstractController
             'path' => 'src/Controller/HomeController.php',
         ]);
     }
+
+//    private function makeImage()
+//    {
+//        $image = imagecreate(200, 100);
+//        imagecolorallocate($image, 255, 128, 0);
+//        imagepng($image, $this->filePath . 'image.png');
+//    }
 }

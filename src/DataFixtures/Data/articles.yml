@@ -1,6 +1,0 @@
-App\Entity\Article:
-    article{1..6}:
-        title: '<sentence()>'
-        slug: 'article-<current()>'
-        content: '<paragraph()>'
-        isPublished: false
