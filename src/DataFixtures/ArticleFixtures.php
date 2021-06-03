@@ -2,14 +2,13 @@
 
 namespace App\DataFixtures;
 
+use App\DataFixtures\Faker\CustomNativeLoader;
 use App\Entity\Article;
-use App\Entity\Author;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use DateTimeImmutable;
 use DateTime;
 use Nelmio\Alice\Loader\NativeLoader;
-use Nelmio\Alice\Throwable\LoadingThrowable;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -27,7 +26,7 @@ class ArticleFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        $objectSet = $this->getNativeLoader()->loadFile(self::DATA_ENTRY_POINT);
+        $objectSet = $this->getCustomNativeLoader()->loadFile(self::DATA_ENTRY_POINT);
 
         foreach ($objectSet->getObjects() as $object) {
             if ($object instanceof Article) {
@@ -74,8 +73,8 @@ class ArticleFixtures extends Fixture
         ];
     }
 
-    private function getNativeLoader(): NativeLoader
+    private function getCustomNativeLoader(): NativeLoader
     {
-        return new NativeLoader();
+        return new CustomNativeLoader();
     }
 }

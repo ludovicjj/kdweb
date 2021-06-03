@@ -1,6 +1,6 @@
 App\Entity\Article:
     article1:
-        title: '<sentence()>'
+        title: '<customName()>'
         slug: 'article-1'
         content: '<paragraph()>'
         isPublished: false
