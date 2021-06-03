@@ -10,7 +10,7 @@ class CustomNativeLoader extends NativeLoader
     protected function createFakerGenerator(): FakerGenerator
     {
         $generator = parent::createFakerGenerator();
-        $generator->addProvider(new MyProvider($generator));
+        $generator->addProvider(new CustomProvider($generator));
         return $generator;
     }
 }
