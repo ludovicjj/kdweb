@@ -39,6 +39,12 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
 
         foreach ($objectSet->getObjects() as $object) {
             if ($object instanceof Picture) {
+                if ($object->getImage() === null) {
+                    throw new HttpException(
+                        400,
+                        sprintf('Invalid Fixture. %s required value to property image', get_class($object))
+                    );
+                }
                 $file = $this->fileUploader->upload($object->getImage());
                 $object->setPictureName($file['fileName'])
                        ->setPicturePath($file['filePath']);

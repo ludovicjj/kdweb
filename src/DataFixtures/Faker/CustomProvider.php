@@ -5,6 +5,7 @@ namespace App\DataFixtures\Faker;
 use Faker\Provider\Base as BaseProvider;
 use Faker\Generator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CustomProvider extends BaseProvider
 {
@@ -23,20 +24,24 @@ class CustomProvider extends BaseProvider
 
     public function customImage(string $name): UploadedFile
     {
-        // Check if directory exist
         if (!file_exists(self::PATH_DATA_PICTURE)) {
             mkdir(self::PATH_DATA_PICTURE);
         }
 
-        // create image and define size
-        $image = imagecreate(200, 150);
-        // define color image
-        imagecolorallocate($image, 255, 128, 0);
-        $filename = self::PATH_DATA_PICTURE . '/' . $name . '.png';
-        // Save image into dir
-        imagepng($image, $filename);
+        $imageId = imagecreate(200, 150);
 
-        // return uploadedFile
+        if ($imageId === false) {
+            throw new HttpException(400, "Cannot Initialize new GD image stream");
+        }
+
+        $colorId = imagecolorallocate($imageId, 255, 128, 0);
+
+        if ($colorId === false) {
+            throw new HttpException(400, "Color allocation failed");
+        }
+
+        $filename = self::PATH_DATA_PICTURE . '/' . $name . '.png';
+        imagepng($imageId, $filename);
         return new UploadedFile($filename, $name, null, null, true);
     }
 
