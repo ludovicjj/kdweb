@@ -4,7 +4,10 @@ namespace App\DataFixtures;
 
 use App\DataFixtures\Faker\CustomNativeLoader;
 use App\Entity\Article;
+use App\Entity\Picture;
+use App\Service\FileUploader;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use DateTimeImmutable;
 use DateTime;
@@ -12,16 +15,22 @@ use Nelmio\Alice\Loader\NativeLoader;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-class ArticleFixtures extends Fixture
+class ArticleFixtures extends Fixture implements FixtureGroupInterface
 {
     const DATA_ENTRY_POINT = __DIR__.'/data/createArticles.yml';
 
     /** @var SluggerInterface $slugger */
     private $slugger;
 
-    public function __construct(SluggerInterface $slugger)
-    {
+    /** @var FileUploader $fileUploader */
+    private $fileUploader;
+
+    public function __construct(
+        SluggerInterface $slugger,
+        FileUploader $fileUploader
+    ) {
         $this->slugger = $slugger;
+        $this->fileUploader = $fileUploader;
     }
 
     public function load(ObjectManager $manager): void
@@ -29,6 +38,11 @@ class ArticleFixtures extends Fixture
         $objectSet = $this->getCustomNativeLoader()->loadFile(self::DATA_ENTRY_POINT);
 
         foreach ($objectSet->getObjects() as $object) {
+            if ($object instanceof Picture) {
+                $file = $this->fileUploader->upload($object->getImage());
+                $object->setPictureName($file['fileName'])
+                       ->setPicturePath($file['filePath']);
+            }
             if ($object instanceof Article) {
                 $randomDate = $this->generateRandomDateBetweenRange('01-01-2020', '01-06-2021');
 
@@ -76,5 +90,10 @@ class ArticleFixtures extends Fixture
     private function getCustomNativeLoader(): NativeLoader
     {
         return new CustomNativeLoader();
+    }
+
+    public static function getGroups(): array
+    {
+        return ['group-1'];
     }
 }
