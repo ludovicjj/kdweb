@@ -12,12 +12,13 @@ class MyProvider extends BaseProvider
         parent::__construct($generator);
     }
 
-    public function customName()
+    public function customName(): string
     {
         $key = array_rand($this->names);
         return $this->names[$key];
     }
 
+    /** @var string[]  */
     private $names = [
         'Mario',
         'Luigi',
