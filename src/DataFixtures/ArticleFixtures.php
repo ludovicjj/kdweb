@@ -25,12 +25,17 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
     /** @var FileUploader $fileUploader */
     private $fileUploader;
 
+    /** @var string $uploadDir */
+    private $uploadDir;
+
     public function __construct(
         SluggerInterface $slugger,
-        FileUploader $fileUploader
+        FileUploader $fileUploader,
+        string $uploadDir
     ) {
         $this->slugger = $slugger;
         $this->fileUploader = $fileUploader;
+        $this->uploadDir = $uploadDir;
     }
 
     public function load(ObjectManager $manager): void
@@ -39,6 +44,10 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
 
         foreach ($objectSet->getObjects() as $object) {
             if ($object instanceof Picture) {
+
+                // clean old pictures
+                array_map('unlink', glob("{$this->uploadDir}*"));
+
                 if ($object->getImage() === null) {
                     throw new HttpException(
                         400,
