@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PictureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @ORM\Entity(repositoryClass=PictureRepository::class)
@@ -35,6 +36,11 @@ class Picture
      * @var Article|null $article
      */
     private $article;
+
+    /**
+     * @var UploadedFile|null $image
+     */
+    private $image;
 
     public function getId(): ?int
     {
@@ -75,5 +81,16 @@ class Picture
         $this->article = $article;
 
         return $this;
+    }
+
+    public function setImage(UploadedFile $image): self
+    {
+        $this->image = $image;
+        return $this;
+    }
+
+    public function getImage(): ?UploadedFile
+    {
+        return $this->image;
     }
 }
