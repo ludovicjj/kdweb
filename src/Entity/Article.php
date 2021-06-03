@@ -70,6 +70,12 @@ class Article
      */
     private $author;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Picture::class, mappedBy="article", cascade={"persist", "remove"})
+     * @var Picture|null $picture
+     */
+    private $picture;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -167,6 +173,28 @@ class Article
     public function setAuthor(Author $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getPicture(): ?Picture
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?Picture $picture): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($picture === null && $this->picture !== null) {
+            $this->picture->setArticle(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($picture !== null && $picture->getArticle() !== $this) {
+            $picture->setArticle($this);
+        }
+
+        $this->picture = $picture;
 
         return $this;
     }
