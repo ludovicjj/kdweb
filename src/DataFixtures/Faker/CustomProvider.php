@@ -6,7 +6,7 @@ use Faker\Provider\Base as BaseProvider;
 use Faker\Generator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class MyProvider extends BaseProvider
+class CustomProvider extends BaseProvider
 {
     const PATH_DATA_PICTURE = __DIR__.'/../DataPicture';
 
