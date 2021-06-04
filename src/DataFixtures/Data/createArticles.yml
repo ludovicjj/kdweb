@@ -1,16 +1,18 @@
 App\Entity\Picture:
-    picture_1:
-        image: '<customImage(image)>'
+    picture_{1..6}:
+        image: '<customImage(image<current()>)>'
 
 App\Entity\Article:
-    article_1:
+    article_{1..6}:
         title: '<customName()>'
         slug: 'article-1'
         content: '<paragraph()>'
         isPublished: false
-        picture: '@picture_1'
+        author: '@author_*'
+        picture: '@picture_<current()>'
 
 App\Entity\Author:
     author_1:
         name: 'bob'
-        addArticle: '@article_1'
+    author_2:
+        name: 'alice'
