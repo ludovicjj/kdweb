@@ -1,6 +1,6 @@
 App\Entity\Picture:
     picture_{1..6}:
-        image: '<customImage(image<current()>)>'
+        image: '<customImage(image<current()>, <customColor()>)>'
 
 App\Entity\Article:
     article_{1..6}:
