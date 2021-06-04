@@ -41,12 +41,10 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
     public function load(ObjectManager $manager): void
     {
         $objectSet = $this->getCustomNativeLoader()->loadFile(self::DATA_ENTRY_POINT);
+        $this->cleanUploadDir();
 
         foreach ($objectSet->getObjects() as $object) {
             if ($object instanceof Picture) {
-
-                // clean old pictures
-                array_map('unlink', glob("{$this->uploadDir}*"));
 
                 if ($object->getImage() === null) {
                     throw new HttpException(
@@ -105,6 +103,17 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
     private function getCustomNativeLoader(): NativeLoader
     {
         return new CustomNativeLoader();
+    }
+
+    /**
+     * Remove all files from the uploads directory
+     * cf: services.yaml
+     */
+    private function cleanUploadDir(): void
+    {
+        if (file_exists($this->uploadDir)) {
+            array_map('unlink', glob("{$this->uploadDir}/*"));
+        }
     }
 
     public static function getGroups(): array
