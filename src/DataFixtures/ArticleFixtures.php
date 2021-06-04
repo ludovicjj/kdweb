@@ -112,7 +112,11 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
     private function cleanUploadDir(): void
     {
         if (file_exists($this->uploadDir)) {
-            array_map('unlink', glob("{$this->uploadDir}/*"));
+            $filesToDelete = glob("{$this->uploadDir}/*");
+
+            if (is_array($filesToDelete)) {
+                array_map('unlink', $filesToDelete);
+            }
         }
     }
 
