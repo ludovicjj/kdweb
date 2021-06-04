@@ -34,6 +34,10 @@ class FileUploader
     {
         $fileName = $this->generateUniqueFileName($file);
 
+        if (!file_exists($this->uploadDir)) {
+            mkdir($this->uploadDir);
+        }
+
         try {
             $file->move($this->uploadDir, $fileName);
         } catch (FileException $fileException) {
