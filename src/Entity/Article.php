@@ -213,7 +213,7 @@ class Article
     }
 
     /**
-     * @return Collection|Category[]
+     * @return ArrayCollection<int, Category>
      */
     public function getCategories(): Collection
     {

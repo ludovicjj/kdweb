@@ -56,7 +56,7 @@ class Category
     }
 
     /**
-     * @return Collection|Article[]
+     * @return ArrayCollection<int, Article>
      */
     public function getArticles(): Collection
     {
