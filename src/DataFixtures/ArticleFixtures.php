@@ -122,6 +122,6 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
 
     public static function getGroups(): array
     {
-        return ['group-1'];
+        return ['articles', 'all'];
     }
 }
