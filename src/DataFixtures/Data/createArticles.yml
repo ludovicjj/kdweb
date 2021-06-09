@@ -21,3 +21,15 @@ App\Entity\Author:
         name: 'bob'
     author_2:
         name: 'alice'
+
+App\Entity\User:
+    user_alice:
+        email: 'alice\@contact.fr'
+        password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'
+        isVerified: true
+        author: '@author_2'
+    user_bob:
+        email: 'bob\@contact.fr'
+        password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'
+        isVerified: false
+        author: '@author_1'
