@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use DateTimeImmutable;
+use DateInterval;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -37,6 +39,74 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Author::class, cascade={"persist", "remove"})
+     * @var Author|null $author
+     */
+    private $author;
+
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     * @var DateTimeImmutable $registeredAt
+     */
+    private $registeredAt;
+
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     * @var DateTimeImmutable $accountMustBeVerifiedBefore
+     */
+    private $accountMustBeVerifiedBefore;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @var string|null $registrationToken
+     */
+    private $registrationToken;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @var boolean $isVerified
+     */
+    private $isVerified;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @var DateTimeImmutable|null $accountVerifiedAt
+     */
+    private $accountVerifiedAt;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @var string|null $forgotPasswordToken
+     */
+    private $forgotPasswordToken;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @var DateTimeImmutable|null $forgotPasswordTokenRequestedAt
+     */
+    private $forgotPasswordTokenRequestedAt;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @var DateTimeImmutable|null $forgotPasswordTokenMustBeVerifiedBefore
+     */
+    private $forgotPasswordTokenMustBeVerifiedBefore;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @var DateTimeImmutable|null $forgotPasswordTokenVerifiedAt
+     */
+    private $forgotPasswordTokenVerifiedAt;
+
+    public function __construct()
+    {
+        $this->isVerified = false;
+        $this->registeredAt = new DateTimeImmutable('now');
+        $this->roles = ['ROLE_USER'];
+        $this->accountMustBeVerifiedBefore = (new DateTimeImmutable('now'))->add(new DateInterval("P1D"));
+    }
 
     public function getId(): ?int
     {
@@ -123,5 +193,125 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getAuthor(): ?Author
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?Author $author): self
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    public function getRegisteredAt(): ?DateTimeImmutable
+    {
+        return $this->registeredAt;
+    }
+
+    public function setRegisteredAt(DateTimeImmutable $registeredAt): self
+    {
+        $this->registeredAt = $registeredAt;
+
+        return $this;
+    }
+
+    public function getAccountMustBeVerifiedBefore(): ?DateTimeImmutable
+    {
+        return $this->accountMustBeVerifiedBefore;
+    }
+
+    public function setAccountMustBeVerifiedBefore(DateTimeImmutable $accountMustBeVerifiedBefore): self
+    {
+        $this->accountMustBeVerifiedBefore = $accountMustBeVerifiedBefore;
+
+        return $this;
+    }
+
+    public function getRegistrationToken(): ?string
+    {
+        return $this->registrationToken;
+    }
+
+    public function setRegistrationToken(?string $registrationToken): self
+    {
+        $this->registrationToken = $registrationToken;
+
+        return $this;
+    }
+
+    public function getIsVerified(): ?bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getAccountVerifiedAt(): ?DateTimeImmutable
+    {
+        return $this->accountVerifiedAt;
+    }
+
+    public function setAccountVerifiedAt(?DateTimeImmutable $accountVerifiedAt): self
+    {
+        $this->accountVerifiedAt = $accountVerifiedAt;
+
+        return $this;
+    }
+
+    public function getForgotPasswordToken(): ?string
+    {
+        return $this->forgotPasswordToken;
+    }
+
+    public function setForgotPasswordToken(?string $forgotPasswordToken): self
+    {
+        $this->forgotPasswordToken = $forgotPasswordToken;
+
+        return $this;
+    }
+
+    public function getForgotPasswordTokenRequestedAt(): ?DateTimeImmutable
+    {
+        return $this->forgotPasswordTokenRequestedAt;
+    }
+
+    public function setForgotPasswordTokenRequestedAt(?DateTimeImmutable $forgotPasswordTokenRequestedAt): self
+    {
+        $this->forgotPasswordTokenRequestedAt = $forgotPasswordTokenRequestedAt;
+
+        return $this;
+    }
+
+    public function getForgotPasswordTokenMustBeVerifiedBefore(): ?DateTimeImmutable
+    {
+        return $this->forgotPasswordTokenMustBeVerifiedBefore;
+    }
+
+    public function setForgotPasswordTokenMustBeVerifiedBefore(?DateTimeImmutable $forgotPasswordTokenMustBeVerifiedBefore): self
+    {
+        $this->forgotPasswordTokenMustBeVerifiedBefore = $forgotPasswordTokenMustBeVerifiedBefore;
+
+        return $this;
+    }
+
+    public function getForgotPasswordTokenVerifiedAt(): ?DateTimeImmutable
+    {
+        return $this->forgotPasswordTokenVerifiedAt;
+    }
+
+    public function setForgotPasswordTokenVerifiedAt(?DateTimeImmutable $forgotPasswordTokenVerifiedAt): self
+    {
+        $this->forgotPasswordTokenVerifiedAt = $forgotPasswordTokenVerifiedAt;
+
+        return $this;
     }
 }
