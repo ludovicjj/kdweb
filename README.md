@@ -7,6 +7,7 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] Le [maker bundle](https://symfony.com/doc/current/bundles/SymfonyMakerBundle/index.html)
 - [x] [Doctrine ORM](https://symfony.com/doc/current/doctrine.html)
 - [x] [Association mapping](https://www.doctrine-project.org/projects/doctrine-orm/en/2.8/reference/association-mapping.html) avec doctrine
+- [x] Création d'une [commande](https://symfony.com/doc/current/console.html)
 
 ## Fixtures
 
