@@ -12,6 +12,7 @@ use Doctrine\Persistence\ObjectManager;
 use DateTimeImmutable;
 use DateTime;
 use Nelmio\Alice\Loader\NativeLoader;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -28,20 +29,25 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
     /** @var string $uploadDir */
     private $uploadDir;
 
+    /** @var Filesystem $fileSystem */
+    private $fileSystem;
+
     public function __construct(
         SluggerInterface $slugger,
         FileUploader $fileUploader,
+        Filesystem $fileSystem,
         string $uploadDir
     ) {
         $this->slugger = $slugger;
         $this->fileUploader = $fileUploader;
+        $this->fileSystem = $fileSystem;
         $this->uploadDir = $uploadDir;
     }
 
     public function load(ObjectManager $manager): void
     {
         $objectSet = $this->getCustomNativeLoader()->loadFile(self::DATA_ENTRY_POINT);
-        $this->cleanUploadDir();
+        $this->RemoveExistingUploadDirAndRecreate();
 
         foreach ($objectSet->getObjects() as $object) {
             if ($object instanceof Picture) {
@@ -106,17 +112,14 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
     }
 
     /**
-     * Remove all files from the uploads directory
-     * cf: services.yaml
+     * Remove the uploads directory and recreate it
+     * see: services.yaml
      */
-    private function cleanUploadDir(): void
+    private function RemoveExistingUploadDirAndRecreate(): void
     {
-        if (file_exists($this->uploadDir)) {
-            $filesToDelete = glob("{$this->uploadDir}/*");
-
-            if (is_array($filesToDelete)) {
-                array_map('unlink', $filesToDelete);
-            }
+        if ($this->fileSystem->exists($this->uploadDir)) {
+            $this->fileSystem->remove($this->uploadDir);
+            $this->fileSystem->mkdir($this->uploadDir);
         }
     }
 
