@@ -3,11 +3,12 @@
 namespace App\Command;
 
 use Exception;
+use LogicException;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -24,7 +25,7 @@ class FixturesReloadCommand extends Command
             ->addArgument(
                 'group-fixture',
                 InputArgument::IS_ARRAY | InputArgument::REQUIRED,
-                'The group fixture to load'
+                'The group fixture to load (separate multiple groups with a space)'
             );
     }
 
@@ -33,18 +34,27 @@ class FixturesReloadCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->section('Drop database then create Database with schema and load fixtures');
 
-        $arguments= [];
+        $arguments = [];
         if (is_array($input->getArgument('group-fixture'))) {
             $arguments = $input->getArgument('group-fixture');
         }
         $this->runSymfonyCommand('doctrine:database:drop', ["--force" => true]);
         $this->runSymfonyCommand('doctrine:database:create', ["--if-not-exists" => true]);
         $this->runSymfonyCommand('doctrine:migrations:migrate', ["--no-interaction" => true]);
-        $this->runSymfonyCommand( 'doctrine:fixtures:load', ["--no-interaction" => true], $arguments);
+        $this->runSymfonyCommand('doctrine:fixtures:load', ["--no-interaction" => true], $arguments);
 
-        $io->success('Fixtures load');
+        $io->success('Recreate database with schema and load fixtures with success');
 
         return Command::SUCCESS;
+    }
+
+    protected function interact(InputInterface $input, OutputInterface $output): void
+    {
+        try {
+            $input->validate();
+        } catch (Exception $e) {
+            $output->writeln("Provide the group fixture to load (separate multiple groups with a space)");
+        }
     }
 
     /**
@@ -60,7 +70,7 @@ class FixturesReloadCommand extends Command
         $application = $this->getApplication();
 
         if (!$application) {
-            throw new LogicException('No application...');
+            throw new LogicException("no application...");
         }
 
         $application->setAutoExit(false);
@@ -74,7 +84,7 @@ class FixturesReloadCommand extends Command
         try {
             $application->run(new ArrayInput($options));
         } catch (Exception $exception) {
-            throw new LogicException($exception->getMessage());
+            throw new LogicException(sprintf("Command %s fail", $command));
         }
 
     }
