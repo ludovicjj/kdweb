@@ -8,8 +8,7 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] [Doctrine ORM](https://symfony.com/doc/current/doctrine.html)
 - [x] [Association mapping](https://www.doctrine-project.org/projects/doctrine-orm/en/2.8/reference/association-mapping.html) avec doctrine
 - [x] Création d'une [commande](https://symfony.com/doc/current/console.html)
-- [x] Le composant [form](https://symfony.com/doc/current/forms.html)
-- [x] Protection [CSRF](https://symfony.com/doc/current/security/csrf.html) avec les formulaires
+- [x] Implémenter un [système d'inscription](https://symfony.com/doc/current/doctrine/registration_form.html) avec le maker bundle
 
 ## Fixtures
 
@@ -20,3 +19,12 @@ Projet fil rouge pour tester les sujets suivants :
 ## Security
 
 - [x] Le système de [sécurité](https://symfony.com/doc/current/security.html) de Symfony
+
+## Formulaire
+
+- [x] Le composant [form](https://symfony.com/doc/current/forms.html)
+- [x] Protection [CSRF](https://symfony.com/doc/current/security/csrf.html) avec les formulaires
+- [x] Creation d'un [formulaire sans class](https://symfony.com/doc/current/form/without_class.html)
+- [x] Configuration du [empty_data](https://symfony.com/doc/current/form/use_empty_data.html) pour les formulaires
+- [x] Les [types](https://symfony.com/doc/current/reference/forms/types.html) de champs
+- [x] [Form Model Classes](https://symfonycasts.com/screencast/symfony-forms/form-dto) (DTO)
