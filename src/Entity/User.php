@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use DateTimeImmutable;
 use DateInterval;
@@ -11,6 +12,7 @@ use DateInterval;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="users")
+ * @UniqueEntity(fields={"email"}, message="Cette adresse email ne peut pas être utilisée.")
  */
 class User implements UserInterface
 {
