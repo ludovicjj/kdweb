@@ -38,7 +38,7 @@ class RegistrationFormType extends AbstractType
                     "attr" => [
                         "pattern" => "^(?=.*?[A-Z])(?=.*?[0-9])(?=.*[-+_!@#$%^&*., ?]).{8,}$",
                         "tilte" => "Minimum 8 caractères avec au moins une majuscule, un chiffre et un caractère spécial",
-                        "max_length" => 255
+                        "maxlength" => 255
                     ]
                 ],
                 "second_options" => [
@@ -49,7 +49,7 @@ class RegistrationFormType extends AbstractType
                     "attr" => [
                         "pattern" => "^(?=.*?[A-Z])(?=.*?[0-9])(?=.*[-+_!@#$%^&*., ?]).{8,}$",
                         "tilte" => "Confirmer votre mot de passe",
-                        "max_length" => 255
+                        "maxlength" => 255
                     ]
                 ]
             ])
