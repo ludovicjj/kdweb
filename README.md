@@ -28,3 +28,9 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] Configuration du [empty_data](https://symfony.com/doc/current/form/use_empty_data.html) pour les formulaires
 - [x] Les [types](https://symfony.com/doc/current/reference/forms/types.html) de champs
 - [x] [Form Model Classes](https://symfonycasts.com/screencast/symfony-forms/form-dto) (DTO)
+
+## Compiler passes
+
+- [x] Travailler avec les [Compiler passes](https://symfony.com/doc/current/service_container/compiler_passes.html) et les services tagger
+- [x] Utilisation du [ServiceLocator](https://symfony.com/doc/current/service_container/service_subscribers_locators.html#using-service-locators-in-compiler-passes) dans les compiler passes
+- [x] Obtenir et définir des [definitions de service](https://symfony.com/doc/current/service_container/definitions.html)
