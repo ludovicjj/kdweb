@@ -34,3 +34,8 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] Travailler avec les [Compiler passes](https://symfony.com/doc/current/service_container/compiler_passes.html) et les services tagger
 - [x] Utilisation du [ServiceLocator](https://symfony.com/doc/current/service_container/service_subscribers_locators.html#using-service-locators-in-compiler-passes) dans les compiler passes
 - [x] Obtenir et définir des [definitions de service](https://symfony.com/doc/current/service_container/definitions.html)
+
+## Twig
+
+- [x] Twig [documentation](https://twig.symfony.com/doc/3.x/)
+- [x] Les [filtres](https://twig.symfony.com/doc/3.x/filters/index.html)
