@@ -8,6 +8,7 @@ use App\HandlerFactory\AbstractHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
@@ -17,8 +18,8 @@ class RegistrationHandler extends AbstractHandler
     /** @var EntityManagerInterface $entityManager */
     private $entityManager;
 
-    /** @var FlashBagInterface $flashBag */
-    private $flashBag;
+    /** @var SessionInterface $session */
+    private $session;
 
     /** @var TokenGeneratorInterface $tokenGenerator */
     private $tokenGenerator;
@@ -29,12 +30,12 @@ class RegistrationHandler extends AbstractHandler
     public function __construct(
         FormFactoryInterface $formFactory,
         EntityManagerInterface $entityManager,
-        FlashBagInterface $flashBag,
+        SessionInterface $session,
         TokenGeneratorInterface $tokenGenerator,
         UserPasswordEncoderInterface $passwordEncoder
     ) {
         $this->entityManager = $entityManager;
-        $this->flashBag = $flashBag;
+        $this->session = $session;
         $this->tokenGenerator = $tokenGenerator;
         $this->passwordEncoder = $passwordEncoder;
         parent::__construct($formFactory);
@@ -54,6 +55,8 @@ class RegistrationHandler extends AbstractHandler
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        $this->flashBag->add("success", "Votre inscription a été effectué avec success.");
+        /** @var FlashBagInterface $flashBag */
+        $flashBag = $this->session->getFlashBag();
+        $flashBag->add("success", "Votre inscription a été effectué avec success.");
     }
 }
