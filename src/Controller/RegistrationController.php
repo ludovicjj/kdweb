@@ -2,35 +2,22 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Form\RegistrationFormType;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Handler\RegistrationHandler;
+use App\HandlerFactory\HandlerFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 
 class RegistrationController extends AbstractController
 {
-    /** @var TokenGeneratorInterface $tokenGenerator */
-    private $tokenGenerator;
-
-    /** @var UserPasswordEncoderInterface $passwordEncoder */
-    private $passwordEncoder;
-
-    /** @var EntityManagerInterface $manager */
-    private $manager;
+    /** @var HandlerFactory $handlerFactory */
+    private $handlerFactory;
 
     public function __construct(
-        TokenGeneratorInterface $tokenGenerator,
-        UserPasswordEncoderInterface $passwordEncoder,
-        EntityManagerInterface $manager
+        HandlerFactory $handlerFactory
     ) {
-        $this->tokenGenerator = $tokenGenerator;
-        $this->passwordEncoder = $passwordEncoder;
-        $this->manager = $manager;
+        $this->handlerFactory = $handlerFactory;
     }
 
     /**
@@ -41,22 +28,14 @@ class RegistrationController extends AbstractController
      */
     public function register(Request $request): Response
     {
-        $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
+        $handler = $this->handlerFactory->createHandler(RegistrationHandler::class);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user->setRegistrationToken($this->tokenGenerator->generateToken())
-                ->setPassword($this->passwordEncoder->encodePassword($user, $form->get('password')->getData()));
-
-            $this->manager->persist($user);
-            $this->manager->flush();
-            $this->addFlash("success", "Votre inscription a été effectué avec success.");
+        if ($handler->handle($request)) {
             return $this->redirectToRoute('app_login');
         }
 
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form->createView(),
+            'registrationForm' => $handler->createView(),
         ]);
     }
 }
