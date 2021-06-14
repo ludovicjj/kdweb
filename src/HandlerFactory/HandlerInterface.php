@@ -12,7 +12,7 @@ interface HandlerInterface
      *
      * @param Request $request
      * @param mixed|null $data
-     * @param array $options
+     * @param array<string, array> $options
      * @return bool
      */
     public function handle(Request $request, $data = null, $options = []): bool;
