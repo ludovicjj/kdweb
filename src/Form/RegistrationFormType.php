@@ -2,13 +2,14 @@
 
 namespace App\Form;
 
-use App\Entity\User;
+use App\DTO\RegistrationDTO;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 
@@ -70,7 +71,13 @@ class RegistrationFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
+            'data_class' => RegistrationDTO::class,
+            'empty_data' => function(FormInterface $form){
+                return new RegistrationDTO(
+                    $form->get('email')->getData(),
+                    $form->get('password')->getData()
+                );
+            }
         ]);
     }
 }
