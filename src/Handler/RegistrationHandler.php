@@ -77,6 +77,9 @@ class RegistrationHandler extends AbstractHandler
 
         /** @var FlashBagInterface $flashBag */
         $flashBag = $this->session->getFlashBag();
-        $flashBag->add("success", "Votre inscription a été effectué avec success.");
+        $flashBag->add(
+            "success",
+            "Votre inscription a été effectué avec success. Veuillez consulter vos e-mails pour activer votre compte"
+        );
     }
 }
