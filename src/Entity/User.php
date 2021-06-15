@@ -209,7 +209,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getRegisteredAt(): ?DateTimeImmutable
+    public function getRegisteredAt(): DateTimeImmutable
     {
         return $this->registeredAt;
     }
@@ -245,7 +245,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getIsVerified(): ?bool
+    public function getIsVerified(): bool
     {
         return $this->isVerified;
     }
