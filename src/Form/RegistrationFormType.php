@@ -16,8 +16,8 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 class RegistrationFormType extends AbstractType
 {
     /**
-     * @param FormBuilderInterface<FormBuilderInterface> $builder
-     * @param array<string, mixed> $options
+     * @param FormBuilderInterface<callable> $builder
+     * @param array<mixed> $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
