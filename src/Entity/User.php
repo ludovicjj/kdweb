@@ -221,7 +221,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getAccountMustBeVerifiedBefore(): ?DateTimeImmutable
+    public function getAccountMustBeVerifiedBefore(): DateTimeImmutable
     {
         return $this->accountMustBeVerifiedBefore;
     }
