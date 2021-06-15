@@ -4,7 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-
+    app.sender_email: '%env(MAILER_SENDER_EMAIL)%'
+    app.sender_name: '%env(MAILER_SENDER_NAME)%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -35,3 +36,8 @@ services:
         resource: '../src/Handler/'
         shared: false
         tags: ['app.handler']
+
+    App\Service\SendMail:
+        arguments:
+            $senderEmail: '%app.sender_email%'
+            $senderName: '%app.sender_name%'
