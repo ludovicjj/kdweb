@@ -49,8 +49,10 @@ class RegistrationHandler extends AbstractHandler
     protected function process(): void
     {
         $user = new User();
-        $user->setRegistrationToken($this->tokenGenerator->generateToken())
-             ->setPassword($this->passwordEncoder->encodePassword($user, $this->form->get('password')->getData()));
+        $user
+            ->setEmail($this->form->get('email')->getData())
+            ->setRegistrationToken($this->tokenGenerator->generateToken())
+            ->setPassword($this->passwordEncoder->encodePassword($user, $this->form->get('password')->getData()));
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
