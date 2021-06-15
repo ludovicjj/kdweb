@@ -36,22 +36,23 @@ class RegistrationFormType extends AbstractType
                 "first_options" => [
                     "label" => "Mot de passe",
                     "label_attr" => [
-                        "title" => "le label title du first_options"
+                        "title" => "Pour des raison de sécurité, votre mot de passe doit contenir au moins 8 caractères 
+                        dont 1 caractère en majuscule, 1 nombre et un caractères special."
                     ],
                     "attr" => [
                         "pattern" => "^(?=.*?[A-Z])(?=.*?[0-9])(?=.*[-+_!@#$%^&*., ?]).{8,}$",
-                        "tilte" => "Minimum 8 caractères avec au moins une majuscule, un chiffre et un caractère spécial",
+                        "title" => "Minimum 8 caractères avec au moins une majuscule, un chiffre et un caractère spécial",
                         "maxlength" => 255
                     ]
                 ],
                 "second_options" => [
-                    "label" => "Confirmer le mot de passe",
+                    "label" => "Confirmer votre mot de passe",
                     "label_attr" => [
-                        "title" => "le label title du second_options"
+                        "title" => "Confirmer votre mot de passe"
                     ],
                     "attr" => [
                         "pattern" => "^(?=.*?[A-Z])(?=.*?[0-9])(?=.*[-+_!@#$%^&*., ?]).{8,}$",
-                        "tilte" => "Confirmer votre mot de passe",
+                        "title" => "Confirmer votre mot de passe",
                         "maxlength" => 255
                     ]
                 ]
