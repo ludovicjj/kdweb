@@ -28,6 +28,8 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] Configuration du [empty_data](https://symfony.com/doc/current/form/use_empty_data.html) pour les formulaires
 - [x] Les [types](https://symfony.com/doc/current/reference/forms/types.html) de champs
 - [x] [Form Model Classes](https://symfonycasts.com/screencast/symfony-forms/form-dto) (DTO)
+- [x] Les [contraintes](https://symfony.com/doc/current/reference/constraints.html) de validation
+- [x] Contraintes de validation [personnalisées](https://symfony.com/doc/current/validation/custom_constraint.html)
 
 ## Compiler passes
 
@@ -39,3 +41,11 @@ Projet fil rouge pour tester les sujets suivants :
 
 - [x] Twig [documentation](https://twig.symfony.com/doc/3.x/)
 - [x] Les [filtres](https://twig.symfony.com/doc/3.x/filters/index.html)
+
+## Email
+
+- [x] [maildev](https://www.npmjs.com/package/maildev)
+- run mail dev cmd : ```maildev --hide-extensions STARTTLS```
+- [x] [mailer](https://symfony.com/doc/current/mailer.html)
+- [x] Utiliser un [template twig](https://symfony.com/doc/current/mailer.html#html-content) pour créer un email
+- [x] [Intégration d'images](https://symfony.com/doc/current/mailer.html#mailer-twig-embedding-images) dans un e-mail
