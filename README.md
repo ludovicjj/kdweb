@@ -19,6 +19,7 @@ Projet fil rouge pour tester les sujets suivants :
 ## Security
 
 - [x] Le système de [sécurité](https://symfony.com/doc/current/security.html) de Symfony
+- [x] Le [UserChecker](https://symfony.com/doc/current/security/user_checkers.html)
 
 ## Formulaire
 
@@ -49,3 +50,10 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] [mailer](https://symfony.com/doc/current/mailer.html)
 - [x] Utiliser un [template twig](https://symfony.com/doc/current/mailer.html#html-content) pour créer un email
 - [x] [Intégration d'images](https://symfony.com/doc/current/mailer.html#mailer-twig-embedding-images) dans un e-mail
+
+## Event Dispatcher
+
+- [x] Les [listeners](https://symfony.com/doc/current/event_dispatcher.html#creating-an-event-listener)
+- [x] Les [subscribers](https://symfony.com/doc/current/event_dispatcher.html#creating-an-event-subscriber)
+- [x] [Authentication events](https://symfony.com/doc/current/components/security/authentication.html#authentication-events)
+- [x] [LogoutEvent](https://symfony.com/blog/new-in-symfony-5-1-simpler-logout-customization)
