@@ -57,3 +57,12 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] Les [subscribers](https://symfony.com/doc/current/event_dispatcher.html#creating-an-event-subscriber)
 - [x] [Authentication events](https://symfony.com/doc/current/components/security/authentication.html#authentication-events)
 - [x] [LogoutEvent](https://symfony.com/blog/new-in-symfony-5-1-simpler-logout-customization)
+
+## Logging
+
+- [x] [LoggerInterface](https://www.php-fig.org/psr/psr-3/) PSR-3
+- [x] Le [stockage](https://symfony.com/doc/current/logging.html#where-logs-are-stored) des log
+- [x] [Limiter](https://symfony.com/doc/current/logging.html#how-to-rotate-your-log-files) la taille des fichiers de log
+- [x] Basculer un [canal](https://symfony.com/doc/current/logging/channels_handlers.html#switching-a-channel-to-a-different-handler) vers un autre gestionnaire
+- [x] Création de [canaux personnalisé](https://symfony.com/doc/current/logging/channels_handlers.html#configure-additional-channels-without-tagged-services)
+- [x] [Câblage automatique](https://symfony.com/doc/current/logging/channels_handlers.html#how-to-autowire-logger-channels) des canaux
