@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Exception\RuntimeException;
 
 class FixturesReloadCommand extends Command
 {
@@ -17,6 +18,9 @@ class FixturesReloadCommand extends Command
 
     /** @var string */
     protected static $defaultDescription = 'Drop database and recreate it with schema and load fixtures';
+
+    /** @var SymfonyStyle $io */
+    private $io;
 
     protected function configure(): void
     {
@@ -28,11 +32,38 @@ class FixturesReloadCommand extends Command
             );
     }
 
+    /**
+     * Executed after configure().
+     * Initialize properties based on the input arguments and options
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function initialize(InputInterface $input, OutputInterface $output): void
+    {
+        $this->io = new SymfonyStyle($input, $output);
+    }
+
+    /**
+     * Executed after initialize() and before execute().
+     * Check if some options/arguments are missing and ask the user for these values.
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function interact(InputInterface $input, OutputInterface $output): void
+    {
+        $this->io->section('Drop database then create Database with schema and load fixtures');
+
+        try {
+            $input->validate();
+        } catch (Exception $e) {
+            throw new RuntimeException("Provide the group fixture to load (separate multiple groups with a space)");
+        }
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
-        $io->section('Drop database then create Database with schema and load fixtures');
-
         $arguments = [];
         if (is_array($input->getArgument('group-fixture'))) {
             $arguments = $input->getArgument('group-fixture');
@@ -42,18 +73,9 @@ class FixturesReloadCommand extends Command
         $this->runSymfonyCommand('doctrine:migrations:migrate', ["--no-interaction" => true]);
         $this->runSymfonyCommand('doctrine:fixtures:load', ["--no-interaction" => true], $arguments);
 
-        $io->success('Recreate database with schema and load fixtures with success');
+        $this->io->success('Recreate database with schema and load fixtures with success');
 
         return Command::SUCCESS;
-    }
-
-    protected function interact(InputInterface $input, OutputInterface $output): void
-    {
-        try {
-            $input->validate();
-        } catch (Exception $e) {
-            $output->writeln("Provide the group fixture to load (separate multiple groups with a space)");
-        }
     }
 
     /**
@@ -85,6 +107,5 @@ class FixturesReloadCommand extends Command
         } catch (Exception $exception) {
             throw new LogicException(sprintf("Command %s fail", $command));
         }
-
     }
 }
