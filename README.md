@@ -31,6 +31,7 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] [Form Model Classes](https://symfonycasts.com/screencast/symfony-forms/form-dto) (DTO)
 - [x] Les [contraintes](https://symfony.com/doc/current/reference/constraints.html) de validation
 - [x] Contraintes de validation [personnalisées](https://symfony.com/doc/current/validation/custom_constraint.html)
+- [x] [FormEvent](https://symfony.com/doc/current/form/events.html)
 
 ## Compiler passes
 
