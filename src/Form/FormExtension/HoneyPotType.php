@@ -41,7 +41,6 @@ class HoneyPotType extends AbstractType
     private function setHoneyPotFieldConfig(): array
     {
         return [
-            'data' => 'fake data',
             'mapped' => false,
             'required' => false,
             'attr' => [
