@@ -1,8 +1,17 @@
 monolog:
+    channels:
+        - honey_pot
     handlers:
+        honeypot:
+            level: info
+            type: rotating_file
+            max_files: 10
+            path:  '%kernel.logs_dir%/security/honeypot/honeypot.%kernel.environment%.log'
+            channels:
+                - honey_pot
         security:
             type: rotating_file
-            path:  '%kernel.logs_dir%/security/security.%kernel.environment%.log'
+            path:  '%kernel.logs_dir%/security/auth/security.%kernel.environment%.log'
             level: debug
             max_files: 10
             channels:
