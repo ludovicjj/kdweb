@@ -164,6 +164,9 @@
     "sebastian/recursion-context": {
         "version": "4.0.4"
     },
+    "symfony/asset": {
+        "version": "v5.2.10"
+    },
     "symfony/cache": {
         "version": "v5.2.9"
     },
