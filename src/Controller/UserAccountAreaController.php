@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * Class UserAccountAreaController
  * @package App\Controller
  *
- * @Route("/user/account/profile", name="app_user_account_")
+ * @Route("/user/account/profile", name="app_user_account_profile_")
  */
 class UserAccountAreaController extends AbstractController
 {
@@ -77,7 +77,7 @@ class UserAccountAreaController extends AbstractController
     }
 
     /**
-     * @Route("/toggle-checking-ip", name="toggle_check_ip", methods={"POST"})
+     * @Route("/toggle-checking-ip", name="toggle_checking_ip", methods={"POST"})
      *
      * @param Request $request
      * @return JsonResponse
