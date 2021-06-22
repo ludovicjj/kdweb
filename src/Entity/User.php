@@ -102,12 +102,25 @@ class User implements UserInterface
      */
     private $forgotPasswordTokenVerifiedAt;
 
+    /**
+     * @ORM\Column(type="boolean")
+     * @var boolean $isGuardCheckIp
+     */
+    private $isGuardCheckIp;
+
+    /**
+     * @ORM\Column(type="json")
+     * @var array<string|null> $whiteListedIpAddresses
+     */
+    private $whiteListedIpAddresses = [];
+
     public function __construct()
     {
         $this->isVerified = false;
         $this->registeredAt = new DateTimeImmutable('now');
         $this->roles = ['ROLE_USER'];
         $this->accountMustBeVerifiedBefore = (new DateTimeImmutable('now'))->add(new DateInterval("P1D"));
+        $this->isGuardCheckIp = false;
     }
 
     public function getId(): ?int
@@ -313,6 +326,39 @@ class User implements UserInterface
     public function setForgotPasswordTokenVerifiedAt(?DateTimeImmutable $forgotPasswordTokenVerifiedAt): self
     {
         $this->forgotPasswordTokenVerifiedAt = $forgotPasswordTokenVerifiedAt;
+
+        return $this;
+    }
+
+    public function getIsGuardCheckIp(): bool
+    {
+        return $this->isGuardCheckIp;
+    }
+
+    public function setIsGuardCheckIp(bool $isGuardCheckIp): self
+    {
+        $this->isGuardCheckIp = $isGuardCheckIp;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string|null>
+     */
+    public function getWhiteListedIpAddresses(): array
+    {
+        return $this->whiteListedIpAddresses;
+    }
+
+    /**
+     * @param string|null $whiteListedIpAddresses
+     * @return $this
+     */
+    public function setWhiteListedIpAddresses(?string $whiteListedIpAddresses): self
+    {
+        if (!in_array($whiteListedIpAddresses, $this->getWhiteListedIpAddresses())) {
+            $this->whiteListedIpAddresses[] = $whiteListedIpAddresses;
+        }
 
         return $this;
     }
