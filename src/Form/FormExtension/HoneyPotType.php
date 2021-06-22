@@ -29,7 +29,14 @@ class HoneyPotType extends AbstractType
         $this->requestStack = $requestStack;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    /**
+     * Build form with HTML attributes and add EventSubscriber
+     *
+     * @param FormBuilderInterface<callable> $builder
+     * @param array<mixed> $options
+     * @return void
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add(self::FIRST_FIELD_FOR_BOT, TextType::class, $this->setHoneyPotFieldConfig())
@@ -38,6 +45,11 @@ class HoneyPotType extends AbstractType
         ;
     }
 
+    /**
+     * Set fields attributes
+     *
+     * @return array<mixed>
+     */
     private function setHoneyPotFieldConfig(): array
     {
         return [

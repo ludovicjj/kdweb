@@ -28,6 +28,9 @@ class HoneyPotSubscriber implements EventSubscriberInterface
         $this->requestStack = $requestStack;
     }
 
+    /**
+     * @return string[]
+     */
     public static function getSubscribedEvents(): array
     {
         return [

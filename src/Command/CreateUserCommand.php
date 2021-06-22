@@ -98,7 +98,11 @@ class CreateUserCommand extends Command
 
         /** @var string $plainPassword */
         $plainPassword = $input->getArgument('plainPassword');
-        $role = [$input->getArgument('role')];
+
+        /** @var string $resultRole */
+        $resultRole = $input->getArgument('role');
+
+        $role = [$resultRole];
         $isVerified = $input->getArgument('isVerified') === 'VERIFIED';
 
         $user = new User();
