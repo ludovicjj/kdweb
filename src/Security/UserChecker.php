@@ -3,19 +3,29 @@
 namespace App\Security;
 
 use App\Entity\User;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserChecker implements UserCheckerInterface
 {
+    /** @var RequestStack $requestStack */
+    private $requestStack;
+
+    public function __construct(
+        RequestStack $requestStack
+    ) {
+        $this->requestStack = $requestStack;
+    }
+
     public function checkPreAuth(UserInterface $user): void
     {
         if (!$user instanceof User) {
             return;
         }
 
-        // Condition will be executed before guard check if username and password are valid
+        // Condition will be executed before guard check if password is valid
     }
 
     public function checkPostAuth(UserInterface $user): void
@@ -32,5 +42,31 @@ class UserChecker implements UserCheckerInterface
                 {$user->getAccountMustBeVerifiedBefore()->format('d/m/Y à H\hi')}"
             );
         }
+
+        if ($user->getIsGuardCheckIp() && !$this->isWhitelistedUserIp($user)) {
+            throw new CustomUserMessageAccountStatusException(
+                "Vous n'êtes pas autorisé à vous authentifier avec cette adresse IP."
+            );
+        }
+    }
+
+    /**
+     * Check if whitelist contain current user's ip
+     *
+     * @param User $user
+     * @return bool
+     */
+    private function isWhitelistedUserIp(User $user): bool
+    {
+        $request = $this->requestStack->getCurrentRequest();
+
+        if (!$request) {
+            return false;
+        }
+
+        $userIp = $request->getClientIp();
+        $whitelistedUserIp = $user->getWhiteListedIpAddresses();
+
+        return in_array($userIp, $whitelistedUserIp, true);
     }
 }
