@@ -1,3 +1,4 @@
+/* hide fields in registration form*/
 fieldset.sweet-candy
 {
     opacity: 0;
@@ -6,4 +7,9 @@ fieldset.sweet-candy
     left: 0;
     width: 0;
     height: 0;
+}
+
+table.table tbody td
+{
+    vertical-align: middle;
 }
