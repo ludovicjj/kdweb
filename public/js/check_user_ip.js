@@ -14,13 +14,21 @@ function toggleCheckingIp()
     const url = this.getAttribute('data-url');
     const options = {
         body: JSON.stringify(this.checked),
+        method: "POST",
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "X-Requested-With": "XMLHttpRequest"
         }
     }
-    console.log(options);
+    fetch(url, options)
+        .then(response => response.json())
+        .then(data => {
+            let isGuardCheckingIp;
+            ({isGuardCheckingIp} = data)
+            label.textContent = isGuardCheckingIp ? "Active" : "Inactive"
+        })
+        .catch(error => console.error(error))
 }
 
 /**
@@ -28,5 +36,30 @@ function toggleCheckingIp()
  */
 function addCurrentUserIpToWhitelist()
 {
+    const target = document.querySelector('p[id="user-ip-addresses"]');
+    const url = this.getAttribute('data-url');
+    const options = {
+        method: "GET",
+        headers: {
+            "Accept": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    }
+    this.disabled = true;
 
+    fetch(url, options)
+        .then(response => response.json())
+        .then(data => {
+            let user_ip;
+            ({user_ip} = data)
+            if (target.textContent === "") {
+                target.textContent = user_ip;
+            } else {
+                if (!target.textContent.includes(user_ip)) {
+                    target.textContent += ` | ${user_ip}`;
+                }
+            }
+            this.disabled = false;
+        })
+        .catch(errors => console.error(errors))
 }
