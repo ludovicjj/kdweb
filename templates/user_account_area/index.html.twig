@@ -32,17 +32,16 @@
                                         class="custom-control-input"
                                         id="check_user_ip_checkbox"
                                         data-url="{{ path('app_user_account_profile_toggle_checking_ip') }}"
+                                        {{ user.isGuardCheckIp ? "checked" : null }}
                                 >
-                                <label class="custom-control-label" for="check_user_ip_checkbox">Inactive</label>
+                                <label class="custom-control-label" for="check_user_ip_checkbox">{{ user.isGuardCheckIp ? "Active" : "Inactive"}}</label>
                             </fieldset>
                         </td>
                         <td>
-                            <p id="user-ip-addresses">
-                                {{ user.whiteListedIpAddresses|join(' | ') }}
-                            </p>
+                            <p id="user-ip-addresses">{{ user.whiteListedIpAddresses|join(' | ') }}</p>
                             <button
                                     type="button"
-                                    class="btn btn-sm btn-warning"
+                                    class="btn btn-warning btn-sm m-2"
                                     id="add_current_user_ip_to_whitelist_button"
                                     data-url="{{ path('app_user_account_profile_add_ip') }}"
                             >
