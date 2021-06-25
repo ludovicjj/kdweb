@@ -351,14 +351,12 @@ class User implements UserInterface
     }
 
     /**
-     * @param string|null $whiteListedIpAddresses
+     * @param array<string|null> $whiteListedIpAddresses
      * @return $this
      */
-    public function setWhiteListedIpAddresses(?string $whiteListedIpAddresses): self
+    public function setWhiteListedIpAddresses(array $whiteListedIpAddresses): self
     {
-        if (!in_array($whiteListedIpAddresses, $this->getWhiteListedIpAddresses())) {
-            $this->whiteListedIpAddresses[] = $whiteListedIpAddresses;
-        }
+        $this->whiteListedIpAddresses = array_unique(array_merge($this->whiteListedIpAddresses, $whiteListedIpAddresses));
 
         return $this;
     }
