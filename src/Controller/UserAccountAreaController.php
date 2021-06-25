@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\ArticleRepository;
+use App\Security\ConfirmPassword;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -26,12 +28,22 @@ class UserAccountAreaController extends AbstractController
     /** @var EntityManagerInterface $entityManager */
     private $entityManager;
 
+    /** @var SessionInterface $session */
+    private $session;
+
+    /** @var ConfirmPassword $confirmPassword */
+    private $confirmPassword;
+
     public function __construct(
         ArticleRepository $articleRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        SessionInterface $session,
+        ConfirmPassword $confirmPassword
     ) {
         $this->articleRepository = $articleRepository;
         $this->entityManager = $entityManager;
+        $this->session = $session;
+        $this->confirmPassword = $confirmPassword;
     }
 
     /**
@@ -51,33 +63,7 @@ class UserAccountAreaController extends AbstractController
     }
 
     /**
-     * @Route("/add-ip", name="add_ip", methods={"GET"})
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function addUserIpToWhiteList(Request $request): JsonResponse
-    {
-        $this->denyAccessUnlessGranted("ROLE_USER");
-        if (!$request->isXmlHttpRequest()) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header "X-Requested-With" is missing.');
-        }
-
-        $userIp = $request->getClientIp();
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $user->setWhiteListedIpAddresses($userIp);
-        $this->entityManager->flush();
-
-        return $this->json([
-            'message' => 'IP address added to white list.',
-            'user_ip' => $userIp
-        ]);
-    }
-
-    /**
-     * @Route("/toggle-checking-ip", name="toggle_checking_ip", methods={"POST"})
+     * @Route("/toggle-checking-ip", name="toggle_checking_ip", methods={"GET", "POST"})
      *
      * @param Request $request
      * @return JsonResponse
@@ -86,24 +72,82 @@ class UserAccountAreaController extends AbstractController
     {
         $this->denyAccessUnlessGranted("ROLE_USER");
         if (!$request->isXmlHttpRequest()) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header "X-Requested-With" is missing.');
+            throw new HttpException(
+                Response::HTTP_BAD_REQUEST,
+                'The header "X-Requested-With" is missing.'
+            );
+        }
+        // Check if header "Toggle-Guard-Checking-Ip"
+        if ($request->headers->get('Toggle-Guard-Checking-Ip')) {
+            // GET JSON
+            $data = $request->getContent();
+
+            // Check JSON value
+            if (!in_array($data, ['true', 'false'], true)) {
+                throw new HttpException(
+                    Response::HTTP_BAD_REQUEST,
+                    'Expected value is "true" or "false"'
+                );
+            }
+
+            // Set new key/value in session
+            $this->session->set('Toggle-Guard-Checking-Ip', $data);
         }
 
-        $switchValue = $request->getContent();
+        $this->confirmPassword->ask();
 
-        if (!in_array($switchValue, ['true', 'false'], true)) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Expected value is "true" or "false"');
+        // GET value for key in session
+        $toggleGuardIp = $this->session->get("Toggle-Guard-Checking-Ip");
+
+        // Check is value exist
+        if ($toggleGuardIp === null) {
+            throw new HttpException(
+                Response::HTTP_BAD_REQUEST,
+                'The header "Toggle-Guard-Checking-Ip" is missing.'
+            );
         }
+
+        // Remove Key in session
+        $this->session->remove("Toggle-Guard-Checking-Ip");
+
+        $isGuardCheckIp = filter_var($toggleGuardIp, FILTER_VALIDATE_BOOLEAN);
 
         /** @var User $user */
         $user = $this->getUser();
-
-        $isSwitchOn = filter_var($switchValue, FILTER_VALIDATE_BOOLEAN);
-        $user->setIsGuardCheckIp($isSwitchOn);
+        $user->setIsGuardCheckIp($isGuardCheckIp);
         $this->entityManager->flush();
 
         return $this->json([
-            'isGuardCheckingIp' => $isSwitchOn
+            "is_guard_checking_ip" => $isGuardCheckIp,
+            "is_password_confirmed" => true
+        ]);
+    }
+
+    /**
+     * @Route("/add-current-ip", name="add_current_ip", methods={"GET", "POST"})
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addCurrentUserIpToWhiteList(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted("ROLE_USER");
+        if (!$request->isXmlHttpRequest()) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header "X-Requested-With" is missing.');
+        }
+
+        $this->confirmPassword->ask();
+
+        $userIp = $request->getClientIp();
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $user->setWhiteListedIpAddresses([$userIp]);
+        $this->entityManager->flush();
+
+        return $this->json([
+            "is_password_confirmed" => "IP address added to white list.",
+            "user_ip" => $userIp
         ]);
     }
 }
