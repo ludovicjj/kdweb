@@ -175,24 +175,31 @@ class UserAccountAreaController extends AbstractController
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'IP addresses entered is invalid.');
         }
 
-        $ipAddresses = array_filter(explode(',', $data), function ($address) {
-            return filter_var($address, FILTER_VALIDATE_IP);
-        });
+        $ipFilter = array_filter(explode(',', $data), [$this, "filterIp"]);
 
         $this->confirmPassword->ask();
 
-        if (!is_array($ipAddresses)) {
+        if (!is_array($ipFilter)) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, "Expected array with edited user's IP.");
         }
 
         /** @var User $user */
         $user = $this->getUser();
-        $user->setWhiteListedIpAddresses($ipAddresses);
+        $user->setWhiteListedIpAddresses($ipFilter);
         $this->entityManager->flush();
 
         return $this->json([
             "is_password_confirmed" => true,
-            "user_ip" => implode(' | ', $ipAddresses)
+            "user_ip" => implode(' | ', $ipFilter)
         ]);
+    }
+
+    /**
+     * @param string $ip
+     * @return mixed
+     */
+    private function filterIp(string $ip)
+    {
+        return filter_var($ip, FILTER_VALIDATE_IP);
     }
 }

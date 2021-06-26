@@ -25,12 +25,20 @@ class ConfirmPassword
     /** @var RequestStack $requestStack */
     private $requestStack;
 
-    /** @var Session $session */
+    /** @var Session<mixed> $session */
     private $session;
 
     /** @var UserPasswordEncoderInterface $passwordEncoder */
     private $passwordEncoder;
 
+    /**
+     * ConfirmPassword constructor.
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param Security $security
+     * @param RequestStack $requestStack
+     * @param Session<mixed> $session
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         Security $security,
@@ -107,7 +115,7 @@ class ConfirmPassword
     /**
      * Invalid user's session if confirmation password is invalide 3 times
      */
-    private function invalidateSession()
+    private function invalidateSession(): void
     {
         if (!$this->session->get("Password-Confirmation-Invalid")) {
             $this->session->set("Password-Confirmation-Invalid", 1);
