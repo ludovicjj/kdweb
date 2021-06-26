@@ -150,4 +150,49 @@ class UserAccountAreaController extends AbstractController
             "user_ip" => $userIp
         ]);
     }
+
+    /**
+     * @Route("/edit-user-ip", name="edit_user_ip", methods={"POST"})
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function editUserIpWhitelist(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted("ROLE_USER");
+
+        if (!$request->isXmlHttpRequest()) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header : "X-Requested-With" is missing.');
+        }
+
+        if (!$request->headers->get("Edit-User-IP")) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header : "Edit-User-IP" is missing.');
+        }
+
+        $data = $request->getContent();
+
+        if (!is_string($data)) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'IP addresses entered is invalid.');
+        }
+
+        $ipAddresses = array_filter(explode(',', $data), function ($address) {
+            return filter_var($address, FILTER_VALIDATE_IP);
+        });
+
+        $this->confirmPassword->ask();
+
+        if (!is_array($ipAddresses)) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, "Expected array with edited user's IP.");
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $user->setWhiteListedIpAddresses($ipAddresses);
+        $this->entityManager->flush();
+
+        return $this->json([
+            "is_password_confirmed" => true,
+            "user_ip" => implode(' | ', $ipAddresses)
+        ]);
+    }
 }
