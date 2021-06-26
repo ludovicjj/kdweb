@@ -5,8 +5,9 @@ namespace App\EventSubscriber;
 
 
 use App\Event\ConfirmPasswordEvents;
-use App\Security\ConfirmPassword;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ConfirmPasswordSubscriber implements EventSubscriberInterface
@@ -33,16 +34,42 @@ class ConfirmPasswordSubscriber implements EventSubscriberInterface
 
     public function onModalDisplay(ConfirmPasswordEvents $event): void
     {
-
+        $this->sendJsonResponse();
     }
 
     public function onPasswordInvalid(ConfirmPasswordEvents $event): void
     {
-
+        $this->sendJsonResponse();
     }
 
     public function onSessionInvalidate(ConfirmPasswordEvents $event): void
     {
+        $loginUrl = $this->urlGenerator->generate("app_login");
+        $this->sendJsonResponse($loginUrl);
+    }
 
+    /**
+     * Send JSON response and exit the parent request.
+     *
+     * @param string|null $loginUrl
+     */
+    private function sendJsonResponse(?string $loginUrl = null)
+    {
+        $data = [
+            "is_confirmed_password" => false,
+            "status" => Response::HTTP_OK
+        ];
+        $status = Response::HTTP_OK;
+
+        if ($loginUrl) {
+            $data["login_url"] = $loginUrl;
+            $data["status"] = Response::HTTP_FOUND;
+            $status = Response::HTTP_FOUND;
+        }
+
+
+        $response = new JsonResponse($data, $status);
+        $response->send();
+        exit();
     }
 }
