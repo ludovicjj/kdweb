@@ -9,7 +9,16 @@ fieldset.sweet-candy
     height: 0;
 }
 
+/* Style used in user account area template */
 table.table tbody td
 {
     vertical-align: middle;
+}
+
+p[id="user-ip-addresses"]
+{
+    cursor: pointer;
+}
+.tooltip-inner {
+    background-color: lightslategrey;
 }
