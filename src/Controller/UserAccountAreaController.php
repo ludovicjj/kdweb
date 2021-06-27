@@ -77,29 +77,18 @@ class UserAccountAreaController extends AbstractController
                 'The header "X-Requested-With" is missing.'
             );
         }
-        // Check if header "Toggle-Guard-Checking-Ip"
+
         if ($request->headers->get('Toggle-Guard-Checking-Ip')) {
-            // GET JSON
             $data = $request->getContent();
-
-            // Check JSON value
             if (!in_array($data, ['true', 'false'], true)) {
-                throw new HttpException(
-                    Response::HTTP_BAD_REQUEST,
-                    'Expected value is "true" or "false"'
-                );
+                throw new HttpException(Response::HTTP_BAD_REQUEST, 'Expected value is "true" or "false"');
             }
-
-            // Set new key/value in session
             $this->session->set('Toggle-Guard-Checking-Ip', $data);
         }
 
         $this->confirmPassword->ask();
-
-        // GET value for key in session
         $toggleGuardIp = $this->session->get("Toggle-Guard-Checking-Ip");
 
-        // Check is value exist
         if ($toggleGuardIp === null) {
             throw new HttpException(
                 Response::HTTP_BAD_REQUEST,
@@ -107,7 +96,6 @@ class UserAccountAreaController extends AbstractController
             );
         }
 
-        // Remove Key in session
         $this->session->remove("Toggle-Guard-Checking-Ip");
 
         $isGuardCheckIp = filter_var($toggleGuardIp, FILTER_VALIDATE_BOOLEAN);
