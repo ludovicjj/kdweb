@@ -3,7 +3,9 @@
 {% block title %}Mon espace utilisateur{% endblock %}
 
 {% block javascripts %}
-    <script defer src="{{ asset('js/check_user_ip.js') }}"></script>
+    <script type="module" src="{{ asset('js/auth/toggle-guard-ip.js') }}"></script>
+    <script type="module" src="{{ asset('js/auth/add-current-ip.js') }}"></script>
+    <script type="module" src="{{ asset('js/auth/edit-ip.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -38,7 +40,13 @@
                             </fieldset>
                         </td>
                         <td>
-                            <p id="user-ip-addresses">{{ user.whiteListedIpAddresses|join(' | ') }}</p>
+                            <p id="user-ip-addresses"
+                               data-url="{{ path('app_user_account_profile_edit_user_ip') }}"
+                               contenteditable="true"
+                               data-toggle="tooltip"
+                               data-placement="bottom"
+                               title="Cliquer pour ajouter ou supprimer une ou plusieurs adresses IP pour cliquer sur la touche 'Entrée'."
+                            >{{ user.whiteListedIpAddresses|join(' | ') }}</p>
                             <button
                                     type="button"
                                     class="btn btn-warning btn-sm m-2"
