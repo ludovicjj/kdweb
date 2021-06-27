@@ -118,8 +118,8 @@ class UserAccountAreaController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json([
-            "is_guard_checking_ip" => $isGuardCheckIp,
-            "is_password_confirmed" => true
+            "is_password_confirmed" => true,
+            "is_guard_checking_ip" => $isGuardCheckIp
         ]);
     }
 
@@ -146,7 +146,7 @@ class UserAccountAreaController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json([
-            "is_password_confirmed" => "IP address added to white list.",
+            "is_password_confirmed" => true,
             "user_ip" => $userIp
         ]);
     }
