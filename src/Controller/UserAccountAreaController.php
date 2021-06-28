@@ -63,7 +63,7 @@ class UserAccountAreaController extends AbstractController
     }
 
     /**
-     * @Route("/toggle-checking-ip", name="toggle_checking_ip", methods={"GET", "POST"})
+     * @Route("/toggle-checking-ip", name="toggle_checking_ip", methods={"POST"})
      *
      * @param Request $request
      * @return JsonResponse
@@ -72,32 +72,26 @@ class UserAccountAreaController extends AbstractController
     {
         $this->denyAccessUnlessGranted("ROLE_USER");
         if (!$request->isXmlHttpRequest()) {
-            throw new HttpException(
-                Response::HTTP_BAD_REQUEST,
-                'The header "X-Requested-With" is missing.'
-            );
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header "X-Requested-With" is missing.');
         }
 
         if ($request->headers->get('Toggle-Guard-Checking-IP')) {
-            $data = $request->getContent();
-            if (!in_array($data, ['true', 'false'], true)) {
+            $json = $request->getContent();
+            if (!in_array($json, ['true', 'false'], true)) {
                 throw new HttpException(Response::HTTP_BAD_REQUEST, 'Expected value is "true" or "false"');
             }
-            $this->session->set('Toggle-Guard-Checking-IP', $data);
+            $this->session->set('Toggle-Guard-Checking-IP', $json);
         }
 
         $this->confirmPassword->ask();
+
         $toggleGuardIp = $this->session->get("Toggle-Guard-Checking-IP");
 
         if ($toggleGuardIp === null) {
-            throw new HttpException(
-                Response::HTTP_BAD_REQUEST,
-                'The header "Toggle-Guard-Checking-IP" is missing.'
-            );
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header "Toggle-Guard-Checking-IP" is missing.');
         }
 
         $this->session->remove("Toggle-Guard-Checking-IP");
-
         $isGuardCheckIp = filter_var($toggleGuardIp, FILTER_VALIDATE_BOOLEAN);
 
         /** @var User $user */

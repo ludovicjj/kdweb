@@ -1,4 +1,4 @@
-import ConfirmIdentity from "./modules/confirm-identity";
+import ConfirmIdentity from "./modules/confirm-identity.js";
 
 new ConfirmIdentity({
     url: document.querySelector('input[id="check_user_ip_checkbox"]').getAttribute("data-url"),

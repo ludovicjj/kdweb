@@ -1,6 +1,6 @@
-import checkIpEntered from "./check-ip-entered";
-import updateSwitchAndLabel from "./update-swith-label";
-import updateWhitelistIp from "./update-whitelist-ip";
+import checkIpEntered from "./check-ip-entered.js";
+import updateSwitchAndLabel from "./update-swith-label.js";
+import updateWhitelistIp from "./update-whitelist-ip.js";
 
 export default class ConfirmIdentity {
 
@@ -32,10 +32,12 @@ export default class ConfirmIdentity {
 
     async callServerToDisplayConfirmModal(event)
     {
+        // toggle
         if (this.url === "/user/account/profile/toggle-checking-ip") {
             this.fetch_options.body = document.querySelector('input[id="check_user_ip_checkbox"]').checked;
         }
 
+        // edit
         if (this.url === "/user/account/profile/edit-user-ip") {
             const user_ip_entered_array = checkIpEntered(event);
 
@@ -44,36 +46,68 @@ export default class ConfirmIdentity {
             }
 
             this.fetch_options.body = user_ip_entered_array;
-
-            try {
-                const response = await fetch(this.url, this.fetch_options)
-                const {is_password_confirmed} = await response.json();
-                !is_password_confirmed ? this.displayConfirmModal() : null;
-            } catch (error) {
-                console.error(error);
-            }
         }
 
-        if (this.url === "/user/account/profile/add-current-ip") {
-            this.fetch_options.body = document.querySelector('input[id="check_user_ip_checkbox"]').checked;
+        // fetch
+        try {
+            const response = await fetch(this.url, this.fetch_options);
+            const {is_password_confirmed} = await response.json();
+            !is_password_confirmed ? this.displayConfirmModal() : null;
+        } catch (error) {
+            console.error(error);
         }
     }
 
     displayConfirmModal()
     {
         this.createConfirmModalForm();
+        this.display_modal_button.click();
         this.modal.addEventListener("shown.bs.modal", () => {
             this.modal_form_input_password.focus();
         });
 
-        this.display_modal_button.click();
-
-        this.modal_form.addEventListener('submit', (event) => this.confirmIdentity(event));
+        this.modal_form.addEventListener('submit', (event) => this.confirmPassword(event));
 
         this.modal.addEventListener("hidden.bs.modal", () => {
             const checkbox_label = document.querySelector('label[for="check_user_ip_checkbox"]').textContent;
             document.querySelector('input[id="check_user_ip_checkbox"]').checked = checkbox_label === 'Active';
         });
+    }
+
+    async confirmPassword(event)
+    {
+        event.preventDefault();
+        const password = this.modal_form_input_password.value;
+        const options = {
+            body: JSON.stringify({password}),
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+                "Confirm-Identity-With-Password": "true"
+            },
+            method: "POST"
+        }
+
+        try {
+            const response = await fetch(this.url, options);
+            const {is_guard_checking_ip, is_password_confirmed, login_url, status_code, user_ip} = await response.json();
+
+            this.resetPasswordInput();
+
+            // Redirect to login if when user entered invalid password 3 times
+            if (status_code === 302) {
+                return window.location.href = login_url;
+            }
+
+            if (is_password_confirmed) {
+                this.passwordIsValid(this.url, is_guard_checking_ip, user_ip);
+            } else {
+                this.passwordIsInvalid();
+            }
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     createConfirmModalForm()
@@ -117,41 +151,6 @@ export default class ConfirmIdentity {
         this.modal_form_error = paragraph_element;
     }
 
-    async confirmIdentity(event)
-    {
-        event.preventDefault();
-        const password = this.modal_form_input_password.value;
-        const options = {
-            body: JSON.stringify({password}),
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "X-Requested-With": "XMLHttpRequest",
-                "Confirm-Identity-With-Password": "true"
-            },
-            method: "POST"
-        }
-
-        try {
-            const response = await fetch(this.url, options);
-            const {is_guard_checking_ip, is_password_confirmed, login_url, status, user_ip} = await response.json();
-
-            this.resetPasswordInput();
-
-            if (status === 302) {
-                window.location.href= login_url;
-            }
-
-            if (is_password_confirmed) {
-                this.passwordIsValid(this.url, is_guard_checking_ip, user_ip);
-            } else {
-                this.passwordIsInvalid();
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
     resetPasswordInput()
     {
         this.modal_form_input_password.value = "";
@@ -174,6 +173,6 @@ export default class ConfirmIdentity {
     passwordIsInvalid()
     {
         this.modal_form_error.classList.remove("d-none");
-        setTimeout(() => this.modal_form_error.classList.add("d-none"), 2000);
+        setTimeout(() => this.modal_form_error.classList.add("d-none"), 3000);
     }
 }

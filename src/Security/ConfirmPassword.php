@@ -63,7 +63,7 @@ class ConfirmPassword
             throw new LogicException("Oops something wrong happen !");
         }
 
-        if (!$request->headers->get('Confirm-Identity-With-Password')) {
+        if (!$request->headers->get("Confirm-Identity-With-Password")) {
             $this->dispatchDisplayModalEvent();
         }
 
@@ -91,10 +91,12 @@ class ConfirmPassword
         $json = $request->getContent();
         $data = json_decode($json, true);
 
-        // check bad format json
+        if ($data === null) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, "Invalid json.");
+        }
 
         if (!array_key_exists("password", $data)) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, "Missing password");
+            throw new HttpException(Response::HTTP_BAD_REQUEST, "Missing password into request body.");
         }
 
         $enteredPassword = $data["password"];
@@ -133,7 +135,7 @@ class ConfirmPassword
                     ont été saisis lors de la confirmation du mot de passe."
                 );
 
-                $this->eventDispatcher->dispatch(new ConfirmPasswordEvents(), ConfirmPasswordEvents::PASSWORD_INVALID);
+                $this->eventDispatcher->dispatch(new ConfirmPasswordEvents(), ConfirmPasswordEvents::SESSION_INVALIDATE);
             }
         }
     }

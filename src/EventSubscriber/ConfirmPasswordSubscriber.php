@@ -56,14 +56,14 @@ class ConfirmPasswordSubscriber implements EventSubscriberInterface
     private function sendJsonResponse(?string $loginUrl = null)
     {
         $data = [
-            "is_confirmed_password" => false,
-            "status" => Response::HTTP_OK
+            "is_password_confirmed" => false,
+            "status_code" => Response::HTTP_OK
         ];
         $status = Response::HTTP_OK;
 
         if ($loginUrl) {
             $data["login_url"] = $loginUrl;
-            $data["status"] = Response::HTTP_FOUND;
+            $data["status_code"] = Response::HTTP_FOUND;
             $status = Response::HTTP_FOUND;
         }
 

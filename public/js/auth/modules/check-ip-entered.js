@@ -1,4 +1,4 @@
-import setCursorAtEnd from "./set-cursor-at-end";
+import setCursorAtEnd from "./set-cursor-at-end.js";
 
 export default function checkIpEntered(event)
 {
