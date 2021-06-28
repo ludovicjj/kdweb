@@ -78,25 +78,25 @@ class UserAccountAreaController extends AbstractController
             );
         }
 
-        if ($request->headers->get('Toggle-Guard-Checking-Ip')) {
+        if ($request->headers->get('Toggle-Guard-Checking-IP')) {
             $data = $request->getContent();
             if (!in_array($data, ['true', 'false'], true)) {
                 throw new HttpException(Response::HTTP_BAD_REQUEST, 'Expected value is "true" or "false"');
             }
-            $this->session->set('Toggle-Guard-Checking-Ip', $data);
+            $this->session->set('Toggle-Guard-Checking-IP', $data);
         }
 
         $this->confirmPassword->ask();
-        $toggleGuardIp = $this->session->get("Toggle-Guard-Checking-Ip");
+        $toggleGuardIp = $this->session->get("Toggle-Guard-Checking-IP");
 
         if ($toggleGuardIp === null) {
             throw new HttpException(
                 Response::HTTP_BAD_REQUEST,
-                'The header "Toggle-Guard-Checking-Ip" is missing.'
+                'The header "Toggle-Guard-Checking-IP" is missing.'
             );
         }
 
-        $this->session->remove("Toggle-Guard-Checking-Ip");
+        $this->session->remove("Toggle-Guard-Checking-IP");
 
         $isGuardCheckIp = filter_var($toggleGuardIp, FILTER_VALIDATE_BOOLEAN);
 
