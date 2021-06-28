@@ -13,10 +13,10 @@ export default class ConfirmIdentity {
      * @param {string} event_type
      */
     constructor({url, element_to_listen, fetch_options, event_type}) {
-        this.modal = document.querySelector('div[id="confirm-identity-modal"]');
-        this.modal_body = document.querySelector('div[id="confirm-identity-modal-body"]');
-        this.display_modal_button = document.querySelector('button[data-target="#confirm-identity-modal"]');
-        this.close_modal_button = document.querySelector('button[id="confirm-identity-modal-button-close"]');
+        this.modal = document.querySelector('div[id="confirm_password_modal"]');
+        this.modal_body = document.querySelector('div[id="confirm_password_modal-body"]');
+        this.display_modal_button = document.querySelector('button[data-target="#confirm_password_modal"]');
+        this.close_modal_button = document.querySelector('button[id="confirm_password_modal-button-close"]');
 
         this.url = url;
         this.element_to_listen = element_to_listen;
