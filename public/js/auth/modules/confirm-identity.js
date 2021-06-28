@@ -97,7 +97,7 @@ export default class ConfirmIdentity {
 
             // Redirect to login if when user entered invalid password 3 times
             if (status_code === 302) {
-                return window.location.href = login_url;
+                window.location.href = login_url;
             }
 
             if (is_password_confirmed) {
