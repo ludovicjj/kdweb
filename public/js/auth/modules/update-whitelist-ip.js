@@ -3,7 +3,7 @@
  * @param {string|null} user_ip
  */
 export default function updateWhitelistIp(user_ip) {
-    const whitelist_ip = document.querySelector('p[id="user-ip-addresses"]');
+    const whitelist_ip = document.querySelector('p[id="user_ip_addresses"]');
 
     if (whitelist_ip.textContent === "") {
         whitelist_ip.textContent = user_ip;
