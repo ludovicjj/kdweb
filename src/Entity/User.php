@@ -356,7 +356,7 @@ class User implements UserInterface
      */
     public function setWhiteListedIpAddresses(array $whiteListedIpAddresses): self
     {
-        $this->whiteListedIpAddresses = array_unique(array_merge($this->whiteListedIpAddresses, $whiteListedIpAddresses));
+        $this->whiteListedIpAddresses = $whiteListedIpAddresses;
 
         return $this;
     }
