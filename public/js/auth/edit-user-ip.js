@@ -1,4 +1,4 @@
-import ConfirmIdentity from "./modules/confirm-identity";
+import ConfirmIdentity from "./modules/confirm-identity.js";
 
 new ConfirmIdentity({
     url: document.querySelector('p[id="user_ip_addresses"]').getAttribute("data-url"),
