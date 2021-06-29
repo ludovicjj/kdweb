@@ -47,6 +47,7 @@ export default class ConfirmIdentity {
                 this.fetch_options.body = user_ip_entered_array;
             } catch (error) {
                 console.error(error.message);
+                return
             }
         }
 
