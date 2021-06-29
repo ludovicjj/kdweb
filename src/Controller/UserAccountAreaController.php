@@ -147,32 +147,30 @@ class UserAccountAreaController extends AbstractController
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header : "X-Requested-With" is missing.');
         }
 
-        if (!$request->headers->get("Edit-User-IP")) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header : "Edit-User-IP" is missing.');
+        if ($request->headers->get("Edit-User-IP")) {
+            $json = $request->getContent();
+            if (!is_string($json)) {
+                throw new HttpException(Response::HTTP_BAD_REQUEST, 'IP addresses entered is invalid.');
+            }
+            $ipArray = array_filter(explode(',', $json), [$this, "filterIp"]);
+            $this->session->set("Edit-User-IP", $ipArray);
         }
-
-        $data = $request->getContent();
-
-        if (!is_string($data)) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'IP addresses entered is invalid.');
-        }
-
-        $ipFilter = array_filter(explode(',', $data), [$this, "filterIp"]);
 
         $this->confirmPassword->ask();
+        $userIP = $this->session->get("Edit-User-IP");
 
-        if (!is_array($ipFilter)) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, "Expected array with edited user's IP.");
+        if (!$userIP) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header : "Edit-User-IP" is missing.');
         }
 
         /** @var User $user */
         $user = $this->getUser();
-        $user->setWhiteListedIpAddresses($ipFilter);
+        $user->setWhiteListedIpAddresses($userIP);
         $this->entityManager->flush();
 
         return $this->json([
             "is_password_confirmed" => true,
-            "user_ip" => implode(' | ', $ipFilter)
+            "user_ip" => implode(' | ', $userIP)
         ]);
     }
 
