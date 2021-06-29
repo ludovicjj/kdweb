@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * Class UserAccountAreaController
  * @package App\Controller
  *
- * @Route("/user/account/profile", name="app_user_account_profile_")
+ * @Route("/user/account", name="app_user_account_")
  */
 class UserAccountAreaController extends AbstractController
 {
@@ -106,12 +106,12 @@ class UserAccountAreaController extends AbstractController
     }
 
     /**
-     * @Route("/add-current-ip", name="add_current_ip", methods={"GET", "POST"})
+     * @Route("/add-user-ip", name="add_user_ip", methods={"GET", "POST"})
      *
      * @param Request $request
      * @return JsonResponse
      */
-    public function addCurrentUserIpToWhiteList(Request $request): JsonResponse
+    public function addUserIpToWhiteList(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted("ROLE_USER");
         if (!$request->isXmlHttpRequest()) {

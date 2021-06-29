@@ -33,12 +33,12 @@ export default class ConfirmIdentity {
     async callServerToDisplayConfirmModal(event)
     {
         // toggle
-        if (this.url === "/user/account/profile/toggle-checking-ip") {
+        if (this.url === "/user/account/toggle-checking-ip") {
             this.fetch_options.body = document.querySelector('input[id="check_user_ip_checkbox"]').checked;
         }
 
         // edit
-        if (this.url === "/user/account/profile/edit-user-ip") {
+        if (this.url === "/user/account/edit-user-ip") {
             const user_ip_entered_array = checkIpEntered(event);
 
             if (!user_ip_entered_array) {
@@ -160,11 +160,11 @@ export default class ConfirmIdentity {
     passwordIsValid(url, is_guard_checking_ip, user_ip)
     {
         switch (url) {
-            case "/user/account/profile/add-current-ip": updateWhitelistIp(user_ip);
+            case "/user/account/add-user-ip": updateWhitelistIp(user_ip);
             break;
-            case "/user/account/profile/edit-user-ip": updateWhitelistIp(user_ip);
+            case "/user/account/edit-user-ip": updateWhitelistIp(user_ip);
             break;
-            case "/user/account/profile/toggle-checking-ip": updateSwitchAndLabel(is_guard_checking_ip);
+            case "/user/account/toggle-checking-ip": updateSwitchAndLabel(is_guard_checking_ip);
             break;
         }
         this.close_modal_button.click();
