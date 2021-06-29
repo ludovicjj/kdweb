@@ -124,7 +124,7 @@ class UserAccountAreaController extends AbstractController
 
         /** @var User $user */
         $user = $this->getUser();
-        $user->setWhiteListedIpAddresses([$userIp]);
+        $user->setWhiteListedIpAddresses(array_unique(array_merge($user->getWhiteListedIpAddresses(), [$userIp])));
         $this->entityManager->flush();
 
         return $this->json([
@@ -158,8 +158,9 @@ class UserAccountAreaController extends AbstractController
 
         $this->confirmPassword->ask();
         $userIP = $this->session->get("Edit-User-IP");
+        $this->session->remove("Edit-User-IP");
 
-        if (!$userIP) {
+        if ($userIP === null) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header : "Edit-User-IP" is missing.');
         }
 
