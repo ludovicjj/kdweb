@@ -53,7 +53,7 @@ class ConfirmPasswordSubscriber implements EventSubscriberInterface
      *
      * @param string|null $loginUrl
      */
-    private function sendJsonResponse(?string $loginUrl = null)
+    private function sendJsonResponse(?string $loginUrl = null): void
     {
         $data = [
             "is_password_confirmed" => false,
