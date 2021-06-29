@@ -4,8 +4,8 @@
 
 {% block javascripts %}
     <script type="module" src="{{ asset('js/auth/toggle-guard-ip.js') }}"></script>
-{#    <script type="module" src="{{ asset('js/auth/add-current-ip.js') }}"></script>#}
-{#    <script type="module" src="{{ asset('js/auth/edit-ip.js') }}"></script>#}
+    <script type="module" src="{{ asset('js/auth/add-user-ip.js') }}"></script>
+{#    <script type="module" src="{{ asset('js/auth/edit-user-ip.js') }}"></script>#}
 {% endblock %}
 
 {% block body %}
@@ -50,7 +50,7 @@
                             <button
                                     type="button"
                                     class="btn btn-warning btn-sm m-2"
-                                    id="add_current_ip_btn"
+                                    id="add_user_ip_btn"
                                     data-url="{{ path('app_user_account_add_user_ip') }}"
                             >
                                 Ajouter mon adresse IP actuelle
