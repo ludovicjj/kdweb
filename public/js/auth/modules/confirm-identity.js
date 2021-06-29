@@ -39,13 +39,15 @@ export default class ConfirmIdentity {
 
         // edit
         if (this.url === "/user/account/edit-user-ip") {
-            const user_ip_entered_array = checkIpEntered(event);
-
-            if (!user_ip_entered_array) {
-                return;
+            try {
+                const user_ip_entered_array = checkIpEntered(event);
+                if (!user_ip_entered_array) {
+                    return;
+                }
+                this.fetch_options.body = user_ip_entered_array;
+            } catch (error) {
+                console.error(error.message);
             }
-
-            this.fetch_options.body = user_ip_entered_array;
         }
 
         // fetch
