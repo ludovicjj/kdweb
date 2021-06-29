@@ -1,4 +1,4 @@
-import ConfirmIdentity from "./modules/confirm-identity";
+import ConfirmIdentity from "./modules/confirm-identity.js";
 
 new ConfirmIdentity({
     url: document.querySelector('button[id="add_user_ip_btn"]').getAttribute("data-url"),
@@ -6,7 +6,6 @@ new ConfirmIdentity({
     fetch_options: {
         headers: {
             "Accept": "application/json",
-            "Content-Type": "application/json",
             "X-Requested-With": "XMLHttpRequest"
         },
         method: "GET"
