@@ -3,6 +3,10 @@
 namespace App\EventSubscriber;
 
 use App\Entity\User;
+use App\Repository\AuthLogRepository;
+use App\Security\BruteForceChecker;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -22,16 +26,25 @@ class AuthenticationSubscriber implements EventSubscriberInterface
     /** @var LoggerInterface $securityLogger */
     private $securityLogger;
 
-    /** @var RequestStack $request */
-    private $request;
+    /** @var RequestStack $requestStack */
+    private $requestStack;
+
+    /** @var BruteForceChecker $forceChecker */
+    private $forceChecker;
+
+    /** @var AuthLogRepository $authLogRepository */
+    private $authLogRepository;
 
     public function __construct(
         LoggerInterface $securityLogger,
-        RequestStack $request
+        RequestStack $requestStack,
+        BruteForceChecker $forceChecker,
+        AuthLogRepository $authLogRepository
     ) {
         $this->securityLogger = $securityLogger;
-        $this->request = $request;
-
+        $this->requestStack = $requestStack;
+        $this->forceChecker = $forceChecker;
+        $this->authLogRepository = $authLogRepository;
     }
 
     /**
@@ -49,6 +62,11 @@ class AuthenticationSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param AuthenticationFailureEvent $event
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
     public function onSecurityAuthenticationFailure(AuthenticationFailureEvent $event): void
     {
         ['user_ip' => $userIP] = $this->getRouteNameAndUserIP();
@@ -62,6 +80,8 @@ class AuthenticationSubscriber implements EventSubscriberInterface
                 $emailEntered
             )
         );
+
+        $this->forceChecker->addFailedAuthAttempt($emailEntered, $userIP);
     }
 
     public function onSecurityAuthenticationSuccess(AuthenticationSuccessEvent $event): void
@@ -76,9 +96,10 @@ class AuthenticationSubscriber implements EventSubscriberInterface
                 sprintf("Anonymous user join us with IP : '%s' on route : '%s'.", $userIP, $routeName)
             );
         } else {
-            $userEmail = $this->getUserEmail($event->getAuthenticationToken());
+            $securityToken = $event->getAuthenticationToken();
+            $userEmail = $this->getUserEmail($securityToken);
             $this->securityLogger->info(
-                sprintf("User '%s' authenticated with success. IP: '%s'", $userEmail, $userIP)
+                sprintf("Anonymous user is now authenticated as '%s' with ip: '%s'", $userEmail, $userIP)
             );
         }
     }
@@ -86,9 +107,20 @@ class AuthenticationSubscriber implements EventSubscriberInterface
     public function onSecurityInteractiveLogin(InteractiveLoginEvent $event): void
     {
         $userEmail = $this->getUserEmail($event->getAuthenticationToken());
-        $this->securityLogger->info(
-            sprintf("Welcome '%s' !", $userEmail)
-        );
+        $request = $this->requestStack->getCurrentRequest();
+        $userIp = $request->getClientIp();
+
+        if ($request && $request->cookies->get("REMEMBERME")) {
+            $this->securityLogger->info(
+                sprintf("User '%s' authenticated by remember me cookie", $userEmail)
+            );
+            $this->authLogRepository->addSuccessfulAttempt($userEmail, $userIp, true);
+        } else {
+            $this->securityLogger->info(
+                sprintf("User '%s' authenticated with success by form login", $userEmail)
+            );
+            $this->authLogRepository->addSuccessfulAttempt($userEmail, $userIp);
+        }
     }
 
     public function onSecurityLogoutEvent(LogoutEvent $event): void
@@ -127,7 +159,7 @@ class AuthenticationSubscriber implements EventSubscriberInterface
      */
     private function getRouteNameAndUserIP(): array
     {
-        $request = $this->request->getCurrentRequest();
+        $request = $this->requestStack->getCurrentRequest();
         if (!$request) {
             return [
                 'user_ip'    => 'unknown',
