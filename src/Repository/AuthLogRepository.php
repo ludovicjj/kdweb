@@ -43,6 +43,7 @@ class AuthLogRepository extends ServiceEntityRepository
     ): void
     {
         $authLog = (new AuthLog($emailEntered, $userIp))->setIsSuccessfulAuth(false);
+
         if ($isBackListed) {
             $start = new DateTimeImmutable('now');
             $end = $start->modify(sprintf('+%d minutes', self::BLACK_LISTING_MAX_DELAY_IN_MINUTES));
@@ -101,7 +102,7 @@ class AuthLogRepository extends ServiceEntityRepository
             ->where('af.authAttemptAt >= :datetime')
             ->andWhere('af.userIp = :user_ip')
             ->andWhere('af.emailEntered = :email_entered')
-            ->andWhere('af.isSuccessFulAuth = false')
+            ->andWhere('af.isSuccessfulAuth = false')
             ->setParameters([
                 "datetime" => $beforeAt,
                 "user_ip" => $userIp,
@@ -122,7 +123,7 @@ class AuthLogRepository extends ServiceEntityRepository
      */
     public function isBlackListedWithThisAttemptFailure(string $emailEntered, ?string $userIp): bool
     {
-        return $this->getRecentFailedAuthAttempt($emailEntered, $userIp) >= self::MAX_FAILED_AUTH_ATTEMPTS -2;
+        return $this->getRecentFailedAuthAttempt($emailEntered, $userIp) > self::MAX_FAILED_AUTH_ATTEMPTS - 2;
     }
 
     /**
