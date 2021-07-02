@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -19,6 +20,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
 {
@@ -38,16 +40,21 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     /** @var UserPasswordEncoderInterface $passwordEncoder */
     private $passwordEncoder;
 
+    /** @var BruteForceChecker $bruteForceCheck */
+    private $bruteForceCheck;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         UrlGeneratorInterface $urlGenerator,
         CsrfTokenManagerInterface $csrfTokenManager,
-        UserPasswordEncoderInterface $passwordEncoder
+        UserPasswordEncoderInterface $passwordEncoder,
+        BruteForceChecker $bruteForceChecker
     ) {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
+        $this->bruteForceCheck = $bruteForceChecker;
     }
 
     public function supports(Request $request): bool
@@ -75,8 +82,22 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         return $credentials;
     }
 
+    /**
+     * @param mixed $credentials
+     * @param UserProviderInterface $userProvider
+     * @return User
+     * @throws NonUniqueResultException
+     */
     public function getUser($credentials, UserProviderInterface $userProvider): User
     {
+        sleep(1);
+
+        if ($endOfBlacklisting = $this->bruteForceCheck->getEndOfBlackListing()) {
+            throw new CustomUserMessageAccountStatusException("Il semblerait que vous avez oubliez votre mot de passe.
+            Par mesure de sécurité vous devez attendre jusqu'à {$endOfBlacklisting} avant de tenter de vous connecter.
+            Vous pouvez cliqué sur le lien ci-dessous pour effectuer une demande de modification de mot de passe.");
+        }
+
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
 
         if (!$this->csrfTokenManager->isTokenValid($token)) {
