@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Security;
-
 
 use App\Repository\AuthLogRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -28,7 +26,7 @@ class BruteForceChecker
 
     /**
      * Add a failed authenticated attempt.
-     * Add into the blacklisting if failed authenticated attempt is equal to 5 attempts
+     * Add blacklisting if failed authentication attempt is equal or over to five failed attempts
      *
      * @param string $emailEntered
      * @param string|null $userIp
