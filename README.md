@@ -1,4 +1,6 @@
-# Symfony
+#KDWEB
+
+## Symfony
 
 Projet fil rouge pour tester les sujets suivants :
 
@@ -9,6 +11,7 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] [Association mapping](https://www.doctrine-project.org/projects/doctrine-orm/en/2.8/reference/association-mapping.html) avec doctrine
 - [x] Création d'une [commande](https://symfony.com/doc/current/console.html)
 - [x] Implémenter un [système d'inscription](https://symfony.com/doc/current/doctrine/registration_form.html) avec le maker bundle
+- [x] Protection du formulaire de login contre les attaques par brute force
 
 ## Fixtures
 
