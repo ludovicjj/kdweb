@@ -84,7 +84,7 @@ class AuthLogRepository extends ServiceEntityRepository
     }
 
     /**
-     * Return the number of recent failed authenticated attempt
+     * Return the number of recent failed authenticated attempts in the last 15 minutes.
      *
      * @param string $emailEntered
      * @param string|null $userIp
@@ -94,8 +94,7 @@ class AuthLogRepository extends ServiceEntityRepository
      */
     public function getRecentFailedAuthAttempt(string $emailEntered, ?string $userIp): int
     {
-        $datetime = new DateTimeImmutable('now');
-        $beforeAt = $datetime->modify(sprintf('-%d minutes', self::BLACK_LISTING_MAX_DELAY_IN_MINUTES));
+        $endTimeBlackListing = $this->getEndTimeOfBlackListing();
 
         return $this->createQueryBuilder('af')
             ->select('COUNT(af)')
@@ -104,7 +103,7 @@ class AuthLogRepository extends ServiceEntityRepository
             ->andWhere('af.emailEntered = :email_entered')
             ->andWhere('af.isSuccessfulAuth = false')
             ->setParameters([
-                "datetime" => $beforeAt,
+                "datetime" => $endTimeBlackListing,
                 "user_ip" => $userIp,
                 "email_entered" => $emailEntered
             ])
@@ -113,11 +112,11 @@ class AuthLogRepository extends ServiceEntityRepository
     }
 
     /**
-     * Return if user is black listed
+     * Check if recent failed auth attempt is equal or over to five failed auth attempts.
      *
      * @param string $emailEntered
      * @param string|null $userIp
-     * @return bool
+     * @return bool Auth attempt is equal or over to 5 failed attempts
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -138,8 +137,7 @@ class AuthLogRepository extends ServiceEntityRepository
      */
     public function getLastEntryBlackListed(string $emailEntered, ?string $userIp): ?AuthLog
     {
-        $datetime = new DateTimeImmutable('now');
-        $beforeAt = $datetime->modify(sprintf('-%d minutes', self::BLACK_LISTING_MAX_DELAY_IN_MINUTES));
+        $endTimeBlackListing = $this->getEndTimeOfBlackListing();
 
         return $this->createQueryBuilder('al')
             ->select('al')
@@ -150,7 +148,7 @@ class AuthLogRepository extends ServiceEntityRepository
             ->setParameters([
                 'user_ip' => $userIp,
                 'email_entered' => $emailEntered,
-                'datetime' => $beforeAt
+                'datetime' => $endTimeBlackListing
             ])
             ->orderBy('al.id', 'DESC')
             ->setMaxResults(1)
@@ -159,12 +157,13 @@ class AuthLogRepository extends ServiceEntityRepository
     }
 
     /**
-     * Return the end of blacklisting rounded to the next minute
+     * Return the end of blacklisting rounded to the next minute formatted in string.
+     * Exemple format: 15h04
      *
      * @param string $emailEntered
      * @param string|null $userIp
      *
-     * @return string|null Time with the following format: 15h00
+     * @return string|null Time with the following format: 15h04
      *
      * @throws NonUniqueResultException
      */
@@ -177,5 +176,16 @@ class AuthLogRepository extends ServiceEntityRepository
         }
 
         return $blackListing->getEndBlackListingAt()->add(new DateInterval("PT1M"))->format('H\hi');
+    }
+
+    /**
+     * Create a datetimeImmutable equal to 15 minutes ago from now.
+     *
+     * @return DateTimeImmutable
+     */
+    private function getEndTimeOfBlackListing(): DateTimeImmutable
+    {
+        $datetime = new DateTimeImmutable('now');
+        return $datetime->modify(sprintf('-%d minutes', self::BLACK_LISTING_MAX_DELAY_IN_MINUTES));
     }
 }
