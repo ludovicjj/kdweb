@@ -15,6 +15,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\AuthenticationEvents;
 use Symfony\Component\Security\Core\Event\AuthenticationFailureEvent;
 use Symfony\Component\Security\Core\Event\AuthenticationSuccessEvent;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Http\Event\DeauthenticatedEvent;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
@@ -63,13 +64,17 @@ class AuthenticationSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * Authentication failure.
+     * Add new info message for security log with authentication failure detail.
+     * Add failed authentication attempt ONLY IF account exist.
+     *
      * @param AuthenticationFailureEvent $event
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
     public function onSecurityAuthenticationFailure(AuthenticationFailureEvent $event): void
     {
-        ['user_ip' => $userIP] = $this->getRouteNameAndUserIP();
+        $userIP = $this->getUserIP();
         $securityToken = $event->getAuthenticationToken();
         ['email' => $emailEntered] = $securityToken->getCredentials();
 
@@ -81,9 +86,17 @@ class AuthenticationSubscriber implements EventSubscriberInterface
             )
         );
 
-        $this->forceChecker->addFailedAuthAttempt($emailEntered, $userIP);
+        // Add Failed Authentication Attempt only if account exist.
+        if (!$event->getAuthenticationException() instanceof UsernameNotFoundException) {
+            $this->forceChecker->addFailedAuthAttempt($emailEntered, $userIP);
+        }
     }
 
+    /**
+     * Authentication success
+     *
+     * @param AuthenticationSuccessEvent $event
+     */
     public function onSecurityAuthenticationSuccess(AuthenticationSuccessEvent $event): void
     {
         [
@@ -99,27 +112,32 @@ class AuthenticationSubscriber implements EventSubscriberInterface
             $securityToken = $event->getAuthenticationToken();
             $userEmail = $this->getUserEmail($securityToken);
             $this->securityLogger->info(
-                sprintf("Anonymous user is now authenticated as '%s' with ip: '%s'", $userEmail, $userIP)
+                sprintf("Anonymous user is now authenticated as '%s' with IP: '%s'", $userEmail, $userIP)
             );
         }
     }
 
+    /**
+     * Authentication successfully by login form
+     *
+     * @param InteractiveLoginEvent $event
+     */
     public function onSecurityInteractiveLogin(InteractiveLoginEvent $event): void
     {
         $userEmail = $this->getUserEmail($event->getAuthenticationToken());
+        $userIP = $this->getUserIP();
         $request = $this->requestStack->getCurrentRequest();
-        $userIp = $request->getClientIp();
 
         if ($request && $request->cookies->get("REMEMBERME")) {
             $this->securityLogger->info(
                 sprintf("User '%s' authenticated by remember me cookie", $userEmail)
             );
-            $this->authLogRepository->addSuccessfulAttempt($userEmail, $userIp, true);
+            $this->authLogRepository->addSuccessfulAttempt($userEmail, $userIP, true);
         } else {
             $this->securityLogger->info(
-                sprintf("User '%s' authenticated with success by form login", $userEmail)
+                sprintf("User '%s' authenticated successfully by form login", $userEmail)
             );
-            $this->authLogRepository->addSuccessfulAttempt($userEmail, $userIp);
+            $this->authLogRepository->addSuccessfulAttempt($userEmail, $userIP);
         }
     }
 
@@ -171,6 +189,19 @@ class AuthenticationSubscriber implements EventSubscriberInterface
             'user_ip'    => $request->getClientIp() ?? 'unknown',
             'route_name' => $request->attributes->get('_route')
         ];
+    }
+
+    /**
+     * Return UserIP or null
+     * @return string|null
+     */
+    public function getUserIP(): ?string
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        if (!$request) {
+            return null;
+        }
+        return $request->getClientIp();
     }
 
     private function getUserEmail(TokenInterface $securityToken): string
