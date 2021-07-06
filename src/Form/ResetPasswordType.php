@@ -15,12 +15,12 @@ class ResetPasswordType extends AbstractType
      * @param FormBuilderInterface<callable> $builder
      * @param array<mixed> $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('password', RepeatedPasswordType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => ResetPasswordDTO::class,
