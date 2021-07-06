@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Controller;
-
 
 use App\Handler\ForgotPasswordHandler;
 use App\HandlerFactory\HandlerFactory;
@@ -16,9 +14,7 @@ class ForgotPasswordController extends AbstractController
     /** @var HandlerFactory $handlerFactory */
     private $handlerFactory;
 
-    public function __construct(
-        HandlerFactory $handlerFactory
-    )
+    public function __construct(HandlerFactory $handlerFactory)
     {
         $this->handlerFactory = $handlerFactory;
     }
@@ -34,7 +30,7 @@ class ForgotPasswordController extends AbstractController
         $handler = $this->handlerFactory->createHandler(ForgotPasswordHandler::class);
 
         if ($handler->handle($request)) {
-            dd('Form is valid');
+            return $this->redirectToRoute("app_login");
         }
 
         return $this->render("forgot_password/forgot_password.html.twig", [
