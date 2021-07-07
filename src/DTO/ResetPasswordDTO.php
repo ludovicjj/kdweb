@@ -10,7 +10,7 @@ class ResetPasswordDTO
      * @var string|null $password
      *
      * @Assert\NotBlank(
-     *     message="Le champs password ne peut être vide."
+     *     message="Le mot de passe ne peut pas être vide."
      * )
      * @Assert\Regex(
      *     pattern="/^(?=.*?[A-Z])(?=.*?[0-9])(?=.*[-+_!@#$%^&*., ?]).{8,}$/",
