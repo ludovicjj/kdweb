@@ -80,8 +80,7 @@ class ForgotPasswordHandler extends AbstractHandler
             'subject' => "Modification de votre mot de passe",
             'html_template' => 'emails/forgot_password.html.twig',
             'context' => [
-                'user' => $user,
-                'tokenLifeTime' => $user->getForgotPasswordTokenMustBeVerifiedBefore()->format('d/m/Y à H:i')
+                'user' => $user
             ]
         ]);
 
