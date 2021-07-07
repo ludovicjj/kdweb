@@ -12,6 +12,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
+use DateTimeImmutable;
 
 class ForgotPasswordHandler extends AbstractHandler
 {
@@ -68,9 +69,25 @@ class ForgotPasswordHandler extends AbstractHandler
             );
             return;
         }
-        //TODO :
-        // Else send mail
-        // Update User
 
+        $user->setForgotPasswordToken($this->tokenGenerator->generateToken())
+            ->setForgotPasswordTokenRequestedAt(new DateTimeImmutable('now'))
+            ->setForgotPasswordTokenMustBeVerifiedBefore(new DateTimeImmutable('+15 minutes'));
+
+        $this->entityManager->flush();
+        $this->sendMail->send([
+            'recipient_email' => $user->getUsername(),
+            'subject' => "Modification de votre mot de passe",
+            'html_template' => 'emails/forgot_password.html.twig',
+            'context' => [
+                'user' => $user,
+                'tokenLifeTime' => $user->getForgotPasswordTokenMustBeVerifiedBefore()->format('d/m/Y à H:i')
+            ]
+        ]);
+
+        $this->session->getFlashBag()->add(
+            "success",
+            "Un e-mail vous a été envoyé pour réinitialiser votre mot de passe"
+        );
     }
 }
