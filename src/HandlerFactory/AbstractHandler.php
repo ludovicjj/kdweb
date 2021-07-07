@@ -17,6 +17,9 @@ abstract class AbstractHandler implements HandlerInterface
     /** @var FormInterface<FormInterface> $form */
     protected $form;
 
+    /** @var mixed|null $entity */
+    protected $entity;
+
     public function __construct(FormFactoryInterface $formFactory)
     {
         $this->formFactory = $formFactory;
@@ -34,8 +37,9 @@ abstract class AbstractHandler implements HandlerInterface
      */
     abstract protected function process(): void;
 
-    public function handle(Request $request, $data = null, $options = []): bool
+    public function handle(Request $request, $data = null, $entity = null, $options = []): bool
     {
+        $this->entity = $entity;
         $resolver = new OptionsResolver();
         $resolver->setRequired('form_type');
         $resolver->setDefault("form_options", []);
