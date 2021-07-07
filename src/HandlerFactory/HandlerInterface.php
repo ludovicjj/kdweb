@@ -11,8 +11,8 @@ interface HandlerInterface
      * Handle form
      *
      * @param Request $request
-     * @param mixed|null $data
-     * @param mixed|null $entity
+     * @param mixed|null $data Form model class (DTO)
+     * @param mixed|null $entity Entity to update
      * @param array<string, array> $options
      * @return bool
      */
