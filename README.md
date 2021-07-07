@@ -13,6 +13,7 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] Implémenter un [système d'inscription](https://symfony.com/doc/current/doctrine/registration_form.html) avec le maker bundle
 - [x] Protection du formulaire de login contre les attaques par brute force
 - [x] Ajouter la fonctionnalité [remember me](https://symfony.com/doc/current/security/remember_me.html)
+- [x] Permettre à l'utilisateur de modifier son mot de passe
 
 ## Fixtures
 
