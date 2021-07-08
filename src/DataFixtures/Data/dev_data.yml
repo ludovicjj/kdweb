@@ -44,7 +44,7 @@ App\Entity\User:
         isVerified: false
         accountMustBeVerifiedBefore: '<generateExpiredDatetime("01-01-2020", "05-10-2020")>'
     user_expired_account3:
-        email: 'expired2\@contact.fr'
+        email: 'expired3\@contact.fr'
         password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'
         isVerified: false
         accountMustBeVerifiedBefore: '<generateExpiredDatetime("01-01-2020", "05-10-2020")>'
