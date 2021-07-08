@@ -7,11 +7,9 @@ use Exception;
 use LogicException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Exception\RuntimeException;
 
 class FixturesReloadCommand extends Command
 {
@@ -37,12 +35,7 @@ class FixturesReloadCommand extends Command
 
     protected function configure(): void
     {
-        $this->setDescription(self::$defaultDescription)
-            ->addArgument(
-                'group-fixture',
-                InputArgument::IS_ARRAY | InputArgument::REQUIRED,
-                'The group fixture to load (separate multiple groups with a space)'
-            );
+        $this->setDescription(self::$defaultDescription);
     }
 
     /**
@@ -67,24 +60,14 @@ class FixturesReloadCommand extends Command
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $this->io->section('Drop database then create Database with schema and load fixtures');
-
-        try {
-            $input->validate();
-        } catch (Exception $e) {
-            throw new RuntimeException("Provide the group fixture to load (separate multiple groups with a space)");
-        }
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $arguments = [];
-        if (is_array($input->getArgument('group-fixture'))) {
-            $arguments = $input->getArgument('group-fixture');
-        }
         $this->runSymfonyCommand('doctrine:database:drop', ["--force" => true]);
         $this->runSymfonyCommand('doctrine:database:create', ["--if-not-exists" => true]);
         $this->runSymfonyCommand('doctrine:migrations:migrate', ["--no-interaction" => true]);
-        $this->runSymfonyCommand('doctrine:fixtures:load', ["--no-interaction" => true], $arguments);
+        $this->runSymfonyCommand('doctrine:fixtures:load', ["--no-interaction" => true]);
         $this->createRememberMeTokenTable();
 
         $this->io->success('Recreate database with schema and load fixtures with success');
@@ -95,12 +78,10 @@ class FixturesReloadCommand extends Command
     /**
      * @param string $command
      * @param array<string, boolean> $options
-     * @param string[] $arguments
      */
     private function runSymfonyCommand(
         string $command,
-        array $options = [],
-        array $arguments = []
+        array $options = []
     ): void {
         $application = $this->getApplication();
 
@@ -111,10 +92,6 @@ class FixturesReloadCommand extends Command
         $application->setAutoExit(false);
 
         $options["command"] = $command;
-
-        if (count($arguments) > 0) {
-            $options["--group"] = $arguments;
-        }
 
         try {
             $application->run(new ArrayInput($options));
