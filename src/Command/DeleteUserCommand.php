@@ -65,7 +65,7 @@ class DeleteUserCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
     }
 
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $this->io->section("DELETE ONE USER IN DATABASE");
         $this->enterEmail($input, $output);
