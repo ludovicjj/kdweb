@@ -6,11 +6,10 @@ use App\DataFixtures\Faker\CustomNativeLoader;
 use App\Entity\Article;
 use App\Entity\Picture;
 use App\Service\FileUploader;
+use App\Utils\DateTimeImmutableTrait;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
-use DateTimeImmutable;
-use DateTime;
 use Nelmio\Alice\Loader\NativeLoader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -18,6 +17,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ArticleFixtures extends Fixture implements FixtureGroupInterface
 {
+    use DateTimeImmutableTrait;
+
     const DATA_ENTRY_POINT = __DIR__.'/data/createArticles.yml';
 
     /** @var SluggerInterface $slugger */
@@ -80,30 +81,6 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
             $manager->persist($object);
         }
         $manager->flush();
-    }
-
-    /**
-     * Generate random DateTimeImmutable object and related date string,
-     * Between a stat date and an end date.
-     *
-     * @param string $start
-     * @param string $end
-     * @return array{dateObject: DateTimeImmutable, dateString: string}
-     */
-    private function generateRandomDateBetweenRange(string $start, string $end): array
-    {
-        $startDate = DateTime::createFromFormat('d-m-Y', $start);
-        $endDate = DateTime::createFromFormat('d-m-Y', $end);
-
-        if (!$startDate || !$endDate) {
-            throw new HttpException(400, 'Parameters invalid, expected date with format d-m-Y');
-        }
-        $randomTimestamp = mt_rand($startDate->getTimestamp(), $endDate->getTimestamp());
-        $dateTimeImmutable = (new DateTimeImmutable())->setTimestamp($randomTimestamp);
-        return [
-            'dateObject' => $dateTimeImmutable,
-            'dateString' => $dateTimeImmutable->format('d-m-Y')
-        ];
     }
 
     private function getCustomNativeLoader(): NativeLoader

@@ -1,4 +1,0 @@
-App\Entity\User:
-    user_{alice, bob}:
-        email: '<current()>\@contact.fr'
-        password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'

@@ -33,3 +33,8 @@ App\Entity\User:
         password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'
         isVerified: false
         author: '@author_1'
+    user_expired_account1:
+        email: 'expired1\@contact.fr'
+        password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'
+        isVerified: false
+
