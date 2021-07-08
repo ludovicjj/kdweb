@@ -52,4 +52,23 @@ class UserValidatorForCommand
 
         return $plainPassword;
     }
+
+    /**
+     * Validate the entered email by user from CLI
+     *
+     * @param string|null $emailEntered
+     * @return string
+     */
+    public function checkEmailForUserDelete(?string $emailEntered): string
+    {
+        if (empty($emailEntered)) {
+            throw new InvalidArgumentException("YOU MUST PROVIDE USER EMAIL.");
+        }
+
+        if (!filter_var($emailEntered, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException("ENTERED EMAIL IS INVALID.");
+        }
+
+        return $emailEntered;
+    }
 }
