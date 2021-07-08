@@ -2,13 +2,16 @@
 
 namespace App\DataFixtures\Faker;
 
+use App\Utils\DateTimeImmutableTrait;
 use Faker\Provider\Base as BaseProvider;
 use Faker\Generator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use DateTimeImmutable;
 
 class CustomProvider extends BaseProvider
 {
+    use DateTimeImmutableTrait;
     const PATH_DATA_PICTURE = __DIR__.'/../DataPicture';
 
     public function __construct(Generator $generator)
@@ -36,6 +39,12 @@ class CustomProvider extends BaseProvider
     {
         $key = array_rand($this->color);
         return $this->color[$key];
+    }
+
+    public function generateExpiredDatetime(string $start = "01-01-2020", string $end = "05-10-2020"): DateTimeImmutable
+    {
+        ["dateObject" => $dateObject] = $this->generateRandomDateBetweenRange($start, $end);
+        return $dateObject;
     }
 
     /**
