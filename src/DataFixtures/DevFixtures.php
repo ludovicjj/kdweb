@@ -8,18 +8,17 @@ use App\Entity\Picture;
 use App\Service\FileUploader;
 use App\Utils\DateTimeImmutableTrait;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Nelmio\Alice\Loader\NativeLoader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-class ArticleFixtures extends Fixture implements FixtureGroupInterface
+class DevFixtures extends Fixture
 {
     use DateTimeImmutableTrait;
 
-    const DATA_ENTRY_POINT = __DIR__.'/data/createArticles.yml';
+    const DATA_ENTRY_POINT = __DIR__.'/data/dev_data.yml';
 
     /** @var SluggerInterface $slugger */
     private $slugger;
@@ -64,7 +63,7 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
                        ->setPicturePath($file['filePath']);
             }
             if ($object instanceof Article) {
-                $randomDate = $this->generateRandomDateBetweenRange('01-01-2020', '01-06-2021');
+                $randomDate = $this->generateRandomDateBetweenRange('01-01-2020', '08-07-2021');
 
                 $title = $object->getTitle();
                 if ($title === null) {
@@ -98,10 +97,5 @@ class ArticleFixtures extends Fixture implements FixtureGroupInterface
             $this->fileSystem->remove($this->uploadDir);
             $this->fileSystem->mkdir($this->uploadDir);
         }
-    }
-
-    public static function getGroups(): array
-    {
-        return ['articles', 'all'];
     }
 }
