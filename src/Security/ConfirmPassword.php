@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Security;
@@ -25,25 +25,17 @@ class ConfirmPassword
     /** @var RequestStack $requestStack */
     private $requestStack;
 
-    /** @var Session<mixed> $session */
+    /** @var SessionInterface $session */
     private $session;
 
     /** @var UserPasswordEncoderInterface $passwordEncoder */
     private $passwordEncoder;
 
-    /**
-     * ConfirmPassword constructor.
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param Security $security
-     * @param RequestStack $requestStack
-     * @param Session<mixed> $session
-     * @param UserPasswordEncoderInterface $passwordEncoder
-     */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         Security $security,
         RequestStack $requestStack,
-        Session $session,
+        SessionInterface $session,
         UserPasswordEncoderInterface $passwordEncoder
     ) {
         $this->eventDispatcher = $eventDispatcher;
@@ -128,13 +120,6 @@ class ConfirmPassword
             );
 
             if ($this->session->get("Password-Confirmation-Invalid") === 3) {
-                $this->session->invalidate();
-                $this->session->getFlashBag()->add(
-                    "danger",
-                    "Vous avez été déconnecté par mesure de sécurité car 3 mots de passe invalides 
-                    ont été saisis lors de la confirmation du mot de passe."
-                );
-
                 $this->eventDispatcher->dispatch(new ConfirmPasswordEvents(), ConfirmPasswordEvents::SESSION_INVALIDATE);
             }
         }
