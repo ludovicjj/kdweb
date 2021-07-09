@@ -27,9 +27,11 @@
                         <td>{{ user.email }}</td>
                         <td>
                             {{ form_start(modifyPasswordForm) }}
-                            {{ form_label(modifyPasswordForm.password.first, "Nouveau mot de passe") }}
-                            {{ form_widget(modifyPasswordForm.password.first) }}
-                            {{ form_errors(modifyPasswordForm.password.first) }}
+                            <fieldset class="form-group">
+                                {{ form_label(modifyPasswordForm.password.first, "Nouveau mot de passe") }}
+                                {{ form_widget(modifyPasswordForm.password.first) }}
+                                {{ form_errors(modifyPasswordForm.password.first) }}
+                            </fieldset>
 
                             {{ form_row(modifyPasswordForm.password.second) }}
                             <button type="submit" class="btn btn-warning btn-sm m-3">Modifier mon mot de passe</button>
