@@ -1,6 +1,7 @@
 import checkIpEntered from "./check-ip-entered.js";
 import updateSwitchAndLabel from "./update-swith-label.js";
 import updateWhitelistIp from "./update-whitelist-ip.js";
+import checkPasswordEntered from "./check-password-entered.js";
 
 export default class ConfirmIdentity {
 
@@ -47,7 +48,19 @@ export default class ConfirmIdentity {
                 this.fetch_options.body = user_ip_entered_array;
             } catch (error) {
                 console.error(error.message);
-                return
+                return;
+            }
+        }
+
+        // modify-password
+        if (this.url === "/user/account/modify-password") {
+            event.preventDefault();
+            try {
+                const password_entered = checkPasswordEntered(event);
+                this.fetch_options.body = JSON.stringify({'password': password_entered});
+            } catch (error) {
+                console.error(error.message);
+                return;
             }
         }
 
@@ -94,13 +107,13 @@ export default class ConfirmIdentity {
 
         try {
             const response = await fetch(this.url, options);
-            const {is_guard_checking_ip, is_password_confirmed, login_url, status_code, user_ip} = await response.json();
+            const {is_guard_checking_ip, is_password_confirmed, is_deauthenticated, user_ip} = await response.json();
 
             this.resetPasswordInput();
 
             // Redirect to login if when user entered invalid password 3 times
-            if (status_code === 302) {
-                window.location.href = login_url;
+            if (is_deauthenticated) {
+                window.location.reload();
             }
 
             if (is_password_confirmed) {
