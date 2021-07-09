@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\DTO\ResetPasswordDTO;
 use App\Entity\User;
+use App\Form\ResetPasswordType;
 use App\Repository\ArticleRepository;
 use App\Security\ConfirmPassword;
+use App\Utils\LogoutUserTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,6 +16,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class UserAccountAreaController
@@ -22,6 +29,8 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class UserAccountAreaController extends AbstractController
 {
+    use LogoutUserTrait;
+
     /** @var ArticleRepository $articleRepository */
     private $articleRepository;
 
@@ -34,16 +43,31 @@ class UserAccountAreaController extends AbstractController
     /** @var ConfirmPassword $confirmPassword */
     private $confirmPassword;
 
+    /** @var TokenStorageInterface $tokenStorage */
+    private $tokenStorage;
+
+    /** @var UserPasswordEncoderInterface $passwordEncoder */
+    private $passwordEncoder;
+
+    /** @var ValidatorInterface $validator */
+    private $validator;
+
     public function __construct(
         ArticleRepository $articleRepository,
         EntityManagerInterface $entityManager,
         SessionInterface $session,
-        ConfirmPassword $confirmPassword
+        ConfirmPassword $confirmPassword,
+        TokenStorageInterface $tokenStorage,
+        UserPasswordEncoderInterface $passwordEncoder,
+        ValidatorInterface $validator
     ) {
         $this->articleRepository = $articleRepository;
         $this->entityManager = $entityManager;
         $this->session = $session;
         $this->confirmPassword = $confirmPassword;
+        $this->tokenStorage = $tokenStorage;
+        $this->passwordEncoder = $passwordEncoder;
+        $this->validator = $validator;
     }
 
     /**
@@ -52,13 +76,20 @@ class UserAccountAreaController extends AbstractController
     public function home(): Response
     {
         $this->denyAccessUnlessGranted("ROLE_USER");
+        $form = $this->createForm(ResetPasswordType::class, null, [
+            "action" => $this->generateUrl("app_user_account_modify_password"),
+            "attr" => [
+                "class" => "mt-3"
+            ]
+        ]);
 
         /** @var User $user */
         $user = $this->getUser();
         return $this->render('user_account_area/index.html.twig', [
             'user' => $user,
             'articlesCreatedCount' => $this->articleRepository->getCountArticlesCreatedByUser($user),
-            'articlesPublished' => $this->articleRepository->getCountArticlesPublishedByUser($user)
+            'articlesPublished' => $this->articleRepository->getCountArticlesPublishedByUser($user),
+            'modifyPasswordForm' => $form->createView()
         ]);
     }
 
@@ -173,6 +204,71 @@ class UserAccountAreaController extends AbstractController
             "is_password_confirmed" => true,
             "user_ip" => implode(' | ', $userIP)
         ]);
+    }
+
+    /**
+     * @Route("/modify-password", name="modify_password", methods={"POST"})
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function modifyPassword(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted("ROLE_USER");
+
+        if (!$request->isXmlHttpRequest()) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header : "X-Requested-With" is missing.');
+        }
+
+        if ($request->headers->get("Password-Modification")) {
+            $json = $request->getContent();
+            $data = json_decode($json, true);
+
+            if ($data === null) {
+                throw new HttpException(Response::HTTP_BAD_REQUEST, 'Invalid json.');
+            }
+
+            if (!array_key_exists('password', $data)) {
+                throw new HttpException(Response::HTTP_BAD_REQUEST, 'Expected password in request body.');
+            }
+
+            $passwordEntered = $data['password'];
+
+            $constraintViolationList = $this->validator->validatePropertyValue(
+                ResetPasswordDTO::class,
+                "password",
+                $passwordEntered
+            );
+
+            if (count($constraintViolationList) > 0) {
+                throw new HttpException(Response::HTTP_BAD_REQUEST, $constraintViolationList[0]->getMessage());
+            }
+
+            $this->session->set('Password-Modification', $passwordEntered);
+        }
+
+        $this->confirmPassword->ask();
+        /** @var User $user */
+        $user = $this->getUser();
+        $passwordEntered = $this->session->get('Password-Modification');
+
+        if ($passwordEntered === null) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header : "Password-Modification" is missing.');
+        }
+
+        $user->setPassword($this->passwordEncoder->encodePassword($user, $passwordEntered));
+        $this->entityManager->flush();
+
+        return $this->logoutUser(
+            $request,
+            $this->session,
+            $this->tokenStorage,
+            "success",
+            "Votre mot de passe a été modifié. Vous pouvez à present vous connecter.",
+            true,
+            true
+        );
+
     }
 
     /**
