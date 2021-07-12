@@ -17,8 +17,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -46,9 +44,6 @@ class UserAccountAreaController extends AbstractController
     /** @var TokenStorageInterface $tokenStorage */
     private $tokenStorage;
 
-    /** @var UserPasswordEncoderInterface $passwordEncoder */
-    private $passwordEncoder;
-
     /** @var ValidatorInterface $validator */
     private $validator;
 
@@ -58,7 +53,6 @@ class UserAccountAreaController extends AbstractController
         SessionInterface $session,
         ConfirmPassword $confirmPassword,
         TokenStorageInterface $tokenStorage,
-        UserPasswordEncoderInterface $passwordEncoder,
         ValidatorInterface $validator
     ) {
         $this->articleRepository = $articleRepository;
@@ -66,7 +60,6 @@ class UserAccountAreaController extends AbstractController
         $this->session = $session;
         $this->confirmPassword = $confirmPassword;
         $this->tokenStorage = $tokenStorage;
-        $this->passwordEncoder = $passwordEncoder;
         $this->validator = $validator;
     }
 
@@ -222,6 +215,10 @@ class UserAccountAreaController extends AbstractController
 
         if ($request->headers->get("Password-Modification")) {
             $json = $request->getContent();
+
+            if (!is_string($json)) {
+                throw new HttpException(Response::HTTP_BAD_REQUEST, 'Password entered invalid. Expected string');
+            }
             $data = json_decode($json, true);
 
             if ($data === null) {
@@ -244,19 +241,19 @@ class UserAccountAreaController extends AbstractController
                 throw new HttpException(Response::HTTP_BAD_REQUEST, $constraintViolationList[0]->getMessage());
             }
 
-            $this->session->set('Password-Modification', $passwordEntered);
+            $this->session->set('Password-Modification-Entered', $passwordEntered);
         }
 
         $this->confirmPassword->ask();
         /** @var User $user */
         $user = $this->getUser();
-        $passwordEntered = $this->session->get('Password-Modification');
+        $plainPassword = $this->session->get('Password-Modification-Entered');
 
-        if ($passwordEntered === null) {
+        if ($plainPassword === null) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'The header : "Password-Modification" is missing.');
         }
 
-        $user->setPassword($this->passwordEncoder->encodePassword($user, $passwordEntered));
+        $user->setPassword($plainPassword);
         $this->entityManager->flush();
 
         return $this->logoutUser(
