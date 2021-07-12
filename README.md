@@ -64,6 +64,7 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] [Authentication events](https://symfony.com/doc/current/components/security/authentication.html#authentication-events)
 - [x] [LogoutEvent](https://symfony.com/blog/new-in-symfony-5-1-simpler-logout-customization)
 - [x] [Event Dispatcher](https://symfony.com/doc/current/components/event_dispatcher.html)
+- [x] [Doctrine Events](https://symfony.com/doc/current/doctrine/events.html)
 
 ## Logging
 
