@@ -2,6 +2,7 @@
 
 namespace App\Handler;
 
+use App\DTO\RegistrationDTO;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\HandlerFactory\AbstractHandler;
@@ -11,7 +12,6 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 
 class RegistrationHandler extends AbstractHandler
@@ -25,9 +25,6 @@ class RegistrationHandler extends AbstractHandler
     /** @var TokenGeneratorInterface $tokenGenerator */
     private $tokenGenerator;
 
-    /** @var UserPasswordEncoderInterface $passwordEncoder */
-    private $passwordEncoder;
-
     /** @var SendMail $sendMail */
     private $sendMail;
 
@@ -36,13 +33,11 @@ class RegistrationHandler extends AbstractHandler
         EntityManagerInterface $entityManager,
         SessionInterface $session,
         TokenGeneratorInterface $tokenGenerator,
-        UserPasswordEncoderInterface $passwordEncoder,
         SendMail $sendMail
     ) {
         $this->entityManager = $entityManager;
         $this->session = $session;
         $this->tokenGenerator = $tokenGenerator;
-        $this->passwordEncoder = $passwordEncoder;
         $this->sendMail = $sendMail;
         parent::__construct($formFactory);
     }
@@ -54,12 +49,15 @@ class RegistrationHandler extends AbstractHandler
 
     protected function process(): void
     {
+        /** @var RegistrationDTO $dto */
+        $dto = $this->form->getData();
+
         $registrationToken = $this->tokenGenerator->generateToken();
         $user = new User();
         $user
-            ->setEmail($this->form->get('email')->getData())
+            ->setEmail($dto->getEmail())
             ->setRegistrationToken($registrationToken)
-            ->setPassword($this->passwordEncoder->encodePassword($user, $this->form->get('password')->getData()));
+            ->setPassword($dto->getPassword());
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();

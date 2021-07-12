@@ -4,14 +4,12 @@ namespace App\Handler;
 
 use App\DTO\ResetPasswordDTO;
 use App\Entity\User;
-use App\Form\ForgotPasswordType;
 use App\Form\ResetPasswordType;
 use App\HandlerFactory\AbstractHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use DateTimeImmutable;
 
 class ResetPasswordHandler extends AbstractHandler
@@ -19,22 +17,17 @@ class ResetPasswordHandler extends AbstractHandler
     /** @var EntityManagerInterface $entityManager */
     private $entityManager;
 
-    /** @var UserPasswordEncoderInterface $passwordEncoder */
-    private $passwordEncoder;
-
     /** @var SessionInterface $session */
     private $session;
 
     public function __construct(
         FormFactoryInterface $formFactory,
         EntityManagerInterface $entityManager,
-        UserPasswordEncoderInterface $passwordEncoder,
         SessionInterface $session
     )
     {
         parent::__construct($formFactory);
         $this->entityManager = $entityManager;
-        $this->passwordEncoder = $passwordEncoder;
         $this->session = $session;
     }
 
@@ -56,7 +49,7 @@ class ResetPasswordHandler extends AbstractHandler
         $user = $this->entity;
         $user->setForgotPasswordToken(null)
             ->setForgotPasswordTokenRequestedAt(new DateTimeImmutable('now'))
-            ->setPassword($this->passwordEncoder->encodePassword($user, $dto->getPassword()));
+            ->setPassword($dto->getPassword());
         $this->entityManager->flush();
 
         // clear session
