@@ -25,27 +25,27 @@ App\Entity\Author:
 App\Entity\User:
     user_alice:
         email: 'alice\@contact.fr'
-        password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'
+        password: 'secret'
         isVerified: true
         author: '@author_2'
     user_bob:
         email: 'bob\@contact.fr'
-        password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'
+        password: 'secret'
         isVerified: false
         author: '@author_1'
     user_expired_account1:
         email: 'expired1\@contact.fr'
-        password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'
+        password: 'secret'
         isVerified: false
         accountMustBeVerifiedBefore: '<generateExpiredDatetime("01-01-2020", "05-10-2020")>'
     user_expired_account2:
         email: 'expired2\@contact.fr'
-        password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'
+        password: 'secret'
         isVerified: false
         accountMustBeVerifiedBefore: '<generateExpiredDatetime("01-01-2020", "05-10-2020")>'
     user_expired_account3:
         email: 'expired3\@contact.fr'
-        password: '\$argon2id\$v=19\$m=65536,t=4,p=1\$OVhFMkFxc2J2ZDZWYTZLOA\$RuM2dirETNLqVtYz4ID1MbpwilItcjEynMCVuBu4cPA'
+        password: 'secret'
         isVerified: false
         accountMustBeVerifiedBefore: '<generateExpiredDatetime("01-01-2020", "05-10-2020")>'
 
