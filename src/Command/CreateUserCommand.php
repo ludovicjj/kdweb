@@ -14,7 +14,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class CreateUserCommand extends Command
 {
@@ -29,9 +28,6 @@ class CreateUserCommand extends Command
     /** @var EntityManagerInterface $entityManager */
     private $entityManager;
 
-    /** @var UserPasswordEncoderInterface $passwordEncoder */
-    private $passwordEncoder;
-
     /** @var UserRepository $userRepository */
     private $userRepository;
 
@@ -40,13 +36,11 @@ class CreateUserCommand extends Command
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        UserPasswordEncoderInterface $passwordEncoder,
         UserRepository $userRepository,
         UserValidatorForCommand $validator,
         string $name = null
     ) {
         $this->entityManager = $entityManager;
-        $this->passwordEncoder = $passwordEncoder;
         $this->userRepository = $userRepository;
         $this->validator = $validator;
         parent::__construct($name);
@@ -107,7 +101,7 @@ class CreateUserCommand extends Command
 
         $user = new User();
         $user->setEmail($email)
-             ->setPassword($this->passwordEncoder->encodePassword($user, $plainPassword))
+             ->setPassword($plainPassword)
              ->setRoles($role)
              ->setIsVerified($isVerified);
 
