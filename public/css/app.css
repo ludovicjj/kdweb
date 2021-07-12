@@ -15,9 +15,10 @@ table.table tbody td
     vertical-align: middle;
 }
 
-p[id="user-ip-addresses"]
+p[id="user_ip_addresses"]
 {
     cursor: pointer;
+    border: 2px solid black;
 }
 .tooltip-inner {
     background-color: lightslategrey;
