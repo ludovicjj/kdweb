@@ -35,6 +35,10 @@ services:
 
     Symfony\Bridge\Doctrine\Security\RememberMe\DoctrineTokenProvider: ~
 
+    App\EventSubscriber\UserPasswordEncoderSubscriber:
+        tags:
+            - { name: 'doctrine.event_subscriber' }
+
     App\Handler\:
         resource: '../src/Handler/'
         shared: false
