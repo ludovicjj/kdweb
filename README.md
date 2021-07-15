@@ -74,3 +74,7 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] Basculer un [canal](https://symfony.com/doc/current/logging/channels_handlers.html#switching-a-channel-to-a-different-handler) vers un autre gestionnaire
 - [x] Création de [canaux personnalisé](https://symfony.com/doc/current/logging/channels_handlers.html#configure-additional-channels-without-tagged-services)
 - [x] [Câblage automatique](https://symfony.com/doc/current/logging/channels_handlers.html#how-to-autowire-logger-channels) des canaux
+
+## Serializer
+
+- [x] Le composant [serializer](https://symfony.com/doc/current/components/serializer.html)
