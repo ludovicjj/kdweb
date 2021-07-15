@@ -1,12 +1,10 @@
 <?php
 
-
 namespace App\EventListener;
-
 
 use App\Entity\User;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Doctrine\Persistence\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserPasswordEncoderListener
@@ -24,11 +22,13 @@ class UserPasswordEncoderListener
         $this->encodeUserPassword($user, $user->getPassword());
     }
 
-    public function preUpdate(User $user, LifecycleEventArgs $args): void
+    /**
+     * @param User $user
+     * @param PreUpdateEventArgs $args
+     */
+    public function preUpdate(User $user, PreUpdateEventArgs $args): void
     {
-        /** @var PreUpdateEventArgs $event */
-        $event = $args;
-        $userChanges = $event->getEntityChangeSet();
+        $userChanges = $args->getEntityChangeSet();
         if (array_key_exists('password', $userChanges)) {
             $this->encodeUserPassword($user, $userChanges['password'][1]);
         }
