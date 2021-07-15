@@ -51,13 +51,17 @@ class RegistrationHandler extends AbstractHandler
     {
         /** @var RegistrationDTO $dto */
         $dto = $this->form->getData();
+        /** @var string $email */
+        $email = $dto->getEmail();
+        /** @var string $plainPassword */
+        $plainPassword = $dto->getPassword();
 
         $registrationToken = $this->tokenGenerator->generateToken();
         $user = new User();
         $user
-            ->setEmail($dto->getEmail())
+            ->setEmail($email)
             ->setRegistrationToken($registrationToken)
-            ->setPassword($dto->getPassword());
+            ->setPassword($plainPassword);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();

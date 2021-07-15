@@ -18,6 +18,8 @@ use Symfony\Component\Serializer\Serializer;
 class CreateUsersFromFileCommand extends Command
 {
     protected static $defaultName = 'app:create-users-from-file';
+
+    /** @var string */
     protected static $defaultDescription = 'Add a short description for your command';
 
     /** @var SymfonyStyle $io */
@@ -62,6 +64,9 @@ class CreateUsersFromFileCommand extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * @return array<mixed>
+     */
     private function getDataFromFile(): array
     {
         $file = $this->dataDir . '/random-user.xml';

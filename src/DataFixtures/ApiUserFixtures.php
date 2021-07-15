@@ -7,6 +7,11 @@ use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ApiUserFixtures extends Fixture
@@ -22,13 +27,31 @@ class ApiUserFixtures extends Fixture
         $this->client = $client;
     }
 
-    public function load(ObjectManager $manager)
+    /**
+     * @param ObjectManager $manager
+     *
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function load(ObjectManager $manager): void
     {
         $this->manager = $manager;
         $this->generateUserWithRandomEmail(3);
     }
 
-    private function generateUserWithRandomEmail(int $number)
+    /**
+     * @param int $number
+     *
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    private function generateUserWithRandomEmail(int $number): void
     {
         $data = $this->fetchRandomUserEmail($number);
 
@@ -44,6 +67,18 @@ class ApiUserFixtures extends Fixture
         }
     }
 
+    /**
+     * @param int $numberOfResults
+     * @param string $nationality
+     *
+     * @return array<mixed>
+     *
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     private function fetchRandomUserEmail(int $numberOfResults = 1, string $nationality = "fr"): array
     {
         $response = $this->client->request("GET", "https://randomuser.me/api/", [

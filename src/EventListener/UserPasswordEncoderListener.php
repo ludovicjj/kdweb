@@ -35,7 +35,7 @@ class UserPasswordEncoderListener
 
     }
 
-    private function encodeUserPassword(User $user, $password): void
+    private function encodeUserPassword(User $user, string $password): void
     {
         $user->setPassword($this->passwordEncoder->encodePassword($user, $password));
     }
