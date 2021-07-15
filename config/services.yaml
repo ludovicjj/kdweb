@@ -36,9 +36,10 @@ services:
 
     Symfony\Bridge\Doctrine\Security\RememberMe\DoctrineTokenProvider: ~
 
-    App\EventSubscriber\UserPasswordEncoderSubscriber:
+    App\EventListener\UserPasswordEncoderListener:
         tags:
-            - { name: 'doctrine.event_subscriber' }
+            - { name: 'doctrine.orm.entity_listener', event: 'prePersist', entity: 'App\Entity\User'}
+            - { name: 'doctrine.orm.entity_listener', event: 'preUpdate', entity: 'App\Entity\User'}
 
     App\Handler\:
         resource: '../src/Handler/'

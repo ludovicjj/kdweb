@@ -5,8 +5,8 @@ namespace App\EventListener;
 
 
 use App\Entity\User;
-use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Doctrine\Persistence\Event\PreUpdateEventArgs;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserPasswordEncoderListener
@@ -19,35 +19,24 @@ class UserPasswordEncoderListener
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getSubscribedEvents(): array
+    public function prePersist(User $user, LifecycleEventArgs $args): void
     {
-        return [
-            Events::prePersist,
-            Events::preUpdate
-        ];
+        $this->encodeUserPassword($user, $user->getPassword());
     }
 
-    public function prePersist(LifecycleEventArgs $args): void
+    public function preUpdate(User $user, LifecycleEventArgs $args): void
     {
-        $this->encodeUserPassword($args);
-    }
-
-    public function preUpdate(LifecycleEventArgs $args): void
-    {
-        $this->encodeUserPassword($args);
-    }
-
-    private function encodeUserPassword(LifecycleEventArgs $args): void
-    {
-        $entity = $args->getObject();
-
-        if (!$entity instanceof User) {
-            return;
+        /** @var PreUpdateEventArgs $event */
+        $event = $args;
+        $userChanges = $event->getEntityChangeSet();
+        if (array_key_exists('password', $userChanges)) {
+            $this->encodeUserPassword($user, $userChanges['password'][1]);
         }
 
-        $entity->setPassword($this->passwordEncoder->encodePassword($entity, $entity->getPassword()));
+    }
+
+    private function encodeUserPassword(User $user, $password): void
+    {
+        $user->setPassword($this->passwordEncoder->encodePassword($user, $password));
     }
 }
