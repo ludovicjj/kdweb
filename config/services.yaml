@@ -6,6 +6,9 @@
 parameters:
     app.sender_email: '%env(MAILER_SENDER_EMAIL)%'
     app.sender_name: '%env(MAILER_SENDER_NAME)%'
+    env(MAINTENANCE_MODE): "false"
+    app.maintenance_mode: '%env(bool:MAINTENANCE_MODE)%'
+    app.maintenance_supported_ip: ['127.0.0.2']
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -14,6 +17,7 @@ services:
         bind:
             $uploadDir: '%kernel.project_dir%/public/uploads'
             $dataDir: '%kernel.project_dir%/public/data'
+            $maintenanceMode: '%kernel.project_dir%/public/.maintenance-ON'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
