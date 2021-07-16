@@ -8,7 +8,7 @@ parameters:
     app.sender_name: '%env(MAILER_SENDER_NAME)%'
     env(MAINTENANCE_MODE): "false"
     app.maintenance_mode: '%env(bool:MAINTENANCE_MODE)%'
-    app.maintenance_supported_ip: ['127.0.0.2']
+    app.maintenance_supported_ip: ['127.0.0.1']
 services:
     # default configuration for services in *this* file
     _defaults:
