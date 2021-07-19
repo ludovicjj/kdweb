@@ -1,4 +1,10 @@
 {% extends 'base.html.twig' %}
+{% block javascripts %}
+    {% if count_recent_login_fail >= 3 %}
+        <script async defer src="https://hcaptcha.com/1/api.js?hl={{ app.request.locale }}"></script>
+        {% include '_partials/_hcaptcha_callback_script.html.twig' %}
+    {% endif %}
+{% endblock %}
 
 {% block title %}Authentification{% endblock %}
 
@@ -36,9 +42,12 @@
                 <label class="custom-control-label" for="remember_me_checkbox">Se souvenir de moi</label>
             </fieldset>
 
-            <button class="btn btn-ml btn-primary d-block mx-auto" type="submit">Valider</button>
+            {% if count_recent_login_fail >= 3 %}
+                {% include '_partials/_hcaptcha_submit_button.html.twig' %}
+            {% else %}
+                <button class="btn btn-ml btn-primary d-block mx-auto" type="submit">Se connecter</button>
+            {% endif %}
         </form>
-
         <a href="{{ path('app_forgot_password') }}" class="d-block text-center text-info text-decoration-none mt-3">Mot de passe oublié</a>
     </main>
 {% endblock %}
