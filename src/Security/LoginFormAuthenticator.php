@@ -3,8 +3,11 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Repository\AuthLogRepository;
+use App\Service\HCaptcha;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -21,6 +24,11 @@ use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticato
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
 {
@@ -43,18 +51,28 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     /** @var BruteForceChecker $bruteForceCheck */
     private $bruteForceCheck;
 
+    /** @var HCaptcha $hCaptcha */
+    private $hCaptcha;
+
+    /** @var AuthLogRepository $authLogRepository */
+    private $authLogRepository;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         UrlGeneratorInterface $urlGenerator,
         CsrfTokenManagerInterface $csrfTokenManager,
         UserPasswordEncoderInterface $passwordEncoder,
-        BruteForceChecker $bruteForceChecker
+        BruteForceChecker $bruteForceChecker,
+        HCaptcha $hCaptcha,
+        AuthLogRepository $authLogRepository
     ) {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
         $this->bruteForceCheck = $bruteForceChecker;
+        $this->authLogRepository = $authLogRepository;
+        $this->hCaptcha = $hCaptcha;
     }
 
     public function supports(Request $request): bool
@@ -66,9 +84,24 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     /**
      * @param Request $request
      * @return array<string>
+     *
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function getCredentials(Request $request): array
     {
+        if (
+            $this->authLogRepository->getRecentFailedAuthAttempt($request->request->get('email'), $request->getClientIp()) >= 3
+            && !$this->hCaptcha->isHCaptchaValid()
+        ) {
+            throw new CustomUserMessageAccountStatusException("La vérification anti-spam a échoué. Veuillez réessayez.");
+        }
+
         $credentials = [
             'email' => $request->request->get('email'),
             'password' => $request->request->get('password'),
