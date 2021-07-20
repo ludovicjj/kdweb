@@ -14,6 +14,7 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] Protection du formulaire de login contre les attaques par brute force
 - [x] Ajouter la fonctionnalité [remember me](https://symfony.com/doc/current/security/remember_me.html)
 - [x] Permettre à l'utilisateur de modifier son mot de passe
+- [x] Mise en place d'un captcha avec [HCaptcha](https://www.hcaptcha.com/)
 
 ## Fixtures
 
