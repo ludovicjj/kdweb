@@ -10,6 +10,8 @@ parameters:
     app.maintenance_mode: '%env(bool:MAINTENANCE_MODE)%'
     app.maintenance_supported_ip: ['127.0.0.1']
     app.hcaptcha_private_key: '%env(HCAPTCHA_PRIVATE_KEY)%'
+    app.discord_client_id: '%env(DISCORD_CLIENT_ID)%'
+    app.discord_client_secret: '%env(DISCORD_CLIENT_SECRET)%'
 services:
     # default configuration for services in *this* file
     _defaults:
