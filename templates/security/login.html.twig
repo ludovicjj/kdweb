@@ -6,6 +6,10 @@
     {% endif %}
 {% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/login-page-discord.css') }}">
+{% endblock %}
+
 {% block title %}Authentification{% endblock %}
 
 {% block body %}
@@ -48,6 +52,14 @@
                 <button class="btn btn-ml btn-primary d-block mx-auto" type="submit">Se connecter</button>
             {% endif %}
         </form>
-        <a href="{{ path('app_forgot_password') }}" class="d-block text-center text-info text-decoration-none mt-3">Mot de passe oublié</a>
+        <a href="{{ path('app_forgot_password') }}"
+           class="d-block text-center text-info text-decoration-none mt-3"
+        >
+            Mot de passe oublié
+        </a>
+        <a href="{{ path('app_oauth_discord') }}" class="oauth-button mt-3">
+            <img src="{{ asset("images/discord-logo.png") }}" alt="discord logo" class="mr-3"/>
+            Se connecter via discord
+        </a>
     </main>
 {% endblock %}

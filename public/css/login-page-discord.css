@@ -1,0 +1,28 @@
+.oauth-button {
+    background-color: #ffffff;
+    border: 2px solid #222222;
+    border-radius: 5px;
+    color: #222222;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    width: 300px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: auto;
+    transition: transform 0.3s;
+}
+.oauth-button img {
+    width: 34px;
+    height: auto;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+}
+.oauth-button:hover {
+    background-color: #222222;
+    border: 2px solid #222222;
+    color: #ffffff;
+    text-decoration: none;
+    transform: scale(1.03);
+}
