@@ -1,7 +1,15 @@
 monolog:
     channels:
         - honey_pot
+        - discord_oauth
     handlers:
+        discord_oauth:
+            level: info
+            type: rotating_file
+            max_files: 10
+            path:  '%kernel.logs_dir%/security/discord/discord.%kernel.environment%.log'
+            channels:
+                - discord_oauth
         honeypot:
             level: info
             type: rotating_file
@@ -25,6 +33,7 @@ monolog:
                 - "!event"
                 - "!security"
                 - "!honey_pot"
+                - "!discord_oauth"
         # uncomment to get logging in your browser
         # you may have to allow bigger header sizes in your Web server configuration
         #firephp:
