@@ -2,6 +2,8 @@
 
 namespace App\Security;
 
+use App\Entity\User;
+use App\Event\DiscordOAuthEvent;
 use App\Repository\UserRepository;
 use App\Service\PasswordGenerator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -9,8 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -72,6 +72,8 @@ class DiscordUserProvider implements UserProviderInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     *
+     * @return User
      */
     public function loadUserFromDiscordOAuth(string $code)
     {
@@ -83,6 +85,25 @@ class DiscordUserProvider implements UserProviderInterface
             "id" => $discordId,
             "username" => $discordUsername
         ] = $discordUserData;
+
+        $user = $this->userRepository->getUserFromDiscordOAuth($discordId, $discordUsername, $email);
+
+        if (!$user) {
+            $randomPassword = $this->passwordGenerator->generatePassword(20);
+            $user = $this->userRepository->createUserFromDiscordOAuth(
+                $discordId,
+                $discordUsername,
+                $email,
+                $randomPassword
+            );
+
+            $this->eventDispatcher->dispatch(
+                new DiscordOAuthEvent($email, $randomPassword),
+                DiscordOAuthEvent::SEND_EMAIL_WITH_PASSWORD
+            );
+        }
+
+        return $user;
     }
 
     /**
