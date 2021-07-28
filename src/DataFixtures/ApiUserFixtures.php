@@ -97,7 +97,10 @@ class ApiUserFixtures extends Fixture
         $data = $response->toArray();
 
         if (!array_key_exists("results", $data)) {
-            throw new ServiceUnavailableHttpException("Missing key 'results' in data returned by API");
+            throw new ServiceUnavailableHttpException(
+                null,
+                "Missing key 'results' in data returned by API"
+            );
         }
 
         return $data['results'];
