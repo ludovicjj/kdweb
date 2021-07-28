@@ -6,7 +6,7 @@ namespace App\Service;
 
 class PasswordGenerator
 {
-    public function generatePassword(int $length): string
+    public function generatePassword(int $length = 12): string
     {
         $uppers = $this->generateCharactersWithCharCodeRange([65, 90]);
         $lowers = $this->generateCharactersWithCharCodeRange([97, 122]);
