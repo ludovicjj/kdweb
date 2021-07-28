@@ -37,6 +37,61 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
+    public function getUserFromDiscordOAuth(
+        string $discordId,
+        string $discordUsername,
+        string $email
+    ): ?User
+    {
+        $user = $this->findOneBy(['email' => $email]);
+
+        if (!$user) {
+            return null;
+        }
+
+        if ($user->getDiscordId() !== $discordId) {
+            $user = $this->updateUserWithDiscordData($discordId, $discordUsername, $user);
+        }
+
+        return $user;
+    }
+
+    public function updateUserWithDiscordData(
+        string $discordId,
+        string $discordUsername,
+        User $user
+    ): User
+    {
+        $user
+            ->setDiscordId($discordId)
+            ->setDiscordUsername($discordUsername);
+
+        $this->_em->flush();
+
+        return $user;
+    }
+
+    public function createUserFromDiscordOAuth(
+        string $discordId,
+        string $discordUsername,
+        string $email,
+        string $randomPassword
+    ): User
+    {
+        $user = new User();
+        $user
+            ->setDiscordId($discordId)
+            ->setDiscordUsername($discordUsername)
+            ->setEmail($email)
+            ->setPassword($randomPassword)
+            ->setIsVerified(true);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        return $user;
+    }
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */
