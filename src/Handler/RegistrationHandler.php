@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
+use DateTimeImmutable;
+use DateInterval;
 
 class RegistrationHandler extends AbstractHandler
 {
@@ -61,7 +63,9 @@ class RegistrationHandler extends AbstractHandler
         $user
             ->setEmail($email)
             ->setRegistrationToken($registrationToken)
-            ->setPassword($plainPassword);
+            ->setPassword($plainPassword)
+            ->setAccountMustBeVerifiedBefore((new DateTimeImmutable('now'))->add(new DateInterval("P1D")))
+            ->setIsVerified(false);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
