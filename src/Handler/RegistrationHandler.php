@@ -70,6 +70,9 @@ class RegistrationHandler extends AbstractHandler
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
+        /** @var DateTimeImmutable $tokenLifeDateTime */
+        $tokenLifeDateTime =  $user->getAccountMustBeVerifiedBefore();
+
         $this->sendMail->send([
             'recipient_email' => $user->getEmail(),
             'subject' => 'Vérification de votre adresse email pour activer votre compte',
@@ -77,7 +80,7 @@ class RegistrationHandler extends AbstractHandler
             'context' => [
                 'userId' => $user->getId(),
                 'registrationToken' => $registrationToken,
-                'tokenLifeTime' => $user->getAccountMustBeVerifiedBefore()->format('d/m/Y à H:i')
+                'tokenLifeTime' => $tokenLifeDateTime->format('d/m/Y à H:i')
             ]
         ]);
 
