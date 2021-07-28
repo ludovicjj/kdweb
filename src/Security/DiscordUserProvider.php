@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -19,6 +20,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
 class DiscordUserProvider implements UserProviderInterface
 {
@@ -185,17 +187,30 @@ class DiscordUserProvider implements UserProviderInterface
 
     public function refreshUser(UserInterface $user)
     {
+        if (!$user instanceof User || !$user->getDiscordId()) {
+            throw new UnsupportedUserException();
+        }
 
+        /** @var string $discordId */
+        $discordId = $user->getDiscordId();
+
+        return $this->loadUserByUsername($discordId);
     }
 
 
-    public function supportsClass(string $class)
+    public function supportsClass(string $class): bool
     {
-
+        return User::class === $class;
     }
 
-    public function loadUserByUsername(string $username)
+    public function loadUserByUsername(string $username): User
     {
-        // TODO: Implement loadUserByUsername() method.
+        $user = $this->userRepository->findOneBy(["discordId" => $username]);
+
+        if (!$user) {
+            throw new UsernameNotFoundException();
+        }
+
+        return $user;
     }
 }
