@@ -7,7 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use DateTimeImmutable;
-use DateInterval;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -55,8 +54,8 @@ class User implements UserInterface
     private $registeredAt;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
-     * @var DateTimeImmutable $accountMustBeVerifiedBefore
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @var DateTimeImmutable|null $accountMustBeVerifiedBefore
      */
     private $accountMustBeVerifiedBefore;
 
@@ -114,12 +113,22 @@ class User implements UserInterface
      */
     private $whiteListedIpAddresses = [];
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @var string|null
+     */
+    private $discordId;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @var string|null
+     */
+    private $discordUsername;
+
     public function __construct()
     {
-        $this->isVerified = false;
         $this->registeredAt = new DateTimeImmutable('now');
         $this->roles = ['ROLE_USER'];
-        $this->accountMustBeVerifiedBefore = (new DateTimeImmutable('now'))->add(new DateInterval("P1D"));
         $this->isGuardCheckIp = false;
     }
 
@@ -234,12 +243,12 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getAccountMustBeVerifiedBefore(): DateTimeImmutable
+    public function getAccountMustBeVerifiedBefore(): ?DateTimeImmutable
     {
         return $this->accountMustBeVerifiedBefore;
     }
 
-    public function setAccountMustBeVerifiedBefore(DateTimeImmutable $accountMustBeVerifiedBefore): self
+    public function setAccountMustBeVerifiedBefore(?DateTimeImmutable $accountMustBeVerifiedBefore): self
     {
         $this->accountMustBeVerifiedBefore = $accountMustBeVerifiedBefore;
 
@@ -357,6 +366,30 @@ class User implements UserInterface
     public function setWhiteListedIpAddresses(array $whiteListedIpAddresses): self
     {
         $this->whiteListedIpAddresses = $whiteListedIpAddresses;
+
+        return $this;
+    }
+
+    public function getDiscordId(): ?string
+    {
+        return $this->discordId;
+    }
+
+    public function setDiscordId(?string $discordId): self
+    {
+        $this->discordId = $discordId;
+
+        return $this;
+    }
+
+    public function getDiscordUsername(): ?string
+    {
+        return $this->discordUsername;
+    }
+
+    public function setDiscordUsername(?string $discordUsername): self
+    {
+        $this->discordUsername = $discordUsername;
 
         return $this;
     }
