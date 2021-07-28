@@ -61,3 +61,8 @@ services:
     App\Service\HCaptcha:
         arguments:
             $privateKey: '%app.hcaptcha_private_key%'
+
+    App\Security\DiscordUserProvider:
+        arguments:
+            $discordClientId: '%app.discord_client_id%'
+            $discordClientSecret: '%app.discord_client_secret%'
