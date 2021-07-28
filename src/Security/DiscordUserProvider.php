@@ -76,6 +76,13 @@ class DiscordUserProvider implements UserProviderInterface
     public function loadUserFromDiscordOAuth(string $code)
     {
         $accessToken = $this->getAccessToken($code);
+        $discordUserData = $this->getUserInfo($accessToken);
+
+        [
+            "email" => $email,
+            "id" => $discordId,
+            "username" => $discordUsername
+        ] = $discordUserData;
     }
 
     /**
@@ -119,6 +126,39 @@ class DiscordUserProvider implements UserProviderInterface
         }
 
         return $data["access_token"];
+    }
+
+    /**
+     * @param string $accessToken
+     * @return array<mixed>
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    private function getUserInfo(string $accessToken)
+    {
+        $options = [
+            "headers" => [
+                "Accept" => "application/json",
+                "Authorization" => "Bearer {$accessToken}"
+            ]
+        ];
+
+        $response = $this->client->request("GET", self::DISCORD_USER_DATA_END_POINT, $options);
+        $data = $response->toArray();
+
+        if (!$data["email"] || !$data["id"] || !$data["username"]) {
+            throw new ServiceUnavailableHttpException(
+                null,
+                "Discord API has been modified or missing data"
+            );
+        } elseif (!$data["verified"]) {
+            throw new HttpException(Response::HTTP_UNAUTHORIZED, "Discord Account is not verified");
+        }
+
+        return $data;
     }
 
 
