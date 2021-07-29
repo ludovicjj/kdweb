@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 
 class DiscordOAuthSubscriber implements EventSubscriberInterface
 {
-    /** @var LoggerInterface $discordLogger */
+    /** @var LoggerInterface $discordOauthLogger */
     private $discordOauthLogger;
 
     /** @var SendMail $sendMail */
@@ -17,14 +17,17 @@ class DiscordOAuthSubscriber implements EventSubscriberInterface
 
     public function __construct(
         SendMail $sendMail,
-       LoggerInterface $discordOauthLogger
+        LoggerInterface $discordOauthLogger
     )
     {
         $this->sendMail = $sendMail;
         $this->discordOauthLogger = $discordOauthLogger;
     }
 
-    public static function getSubscribedEvents()
+    /**
+     * @return string[]
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
             DiscordOAuthEvent::SEND_EMAIL_WITH_PASSWORD => "onSendEmailWithPassword",
