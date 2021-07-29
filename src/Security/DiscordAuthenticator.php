@@ -49,6 +49,10 @@ class DiscordAuthenticator extends AbstractGuardAuthenticator
         return $request->query->has("discord-oauth-provider");
     }
 
+    /**
+     * @param Request $request
+     * @return array<string, string|null>
+     */
     public function getCredentials(Request $request): array
     {
         $state = $request->query->get("state");
@@ -74,7 +78,7 @@ class DiscordAuthenticator extends AbstractGuardAuthenticator
      */
     public function getUser($credentials, UserProviderInterface $userProvider): ?User
     {
-        if ($credentials === null)
+        if ($credentials["code"] === null)
         {
             return null;
         }
@@ -87,11 +91,9 @@ class DiscordAuthenticator extends AbstractGuardAuthenticator
         return true;
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
-        return new JsonResponse([
-            "message" => "authentification refusé"
-        ], Response::HTTP_UNAUTHORIZED);
+        return new RedirectResponse($this->urlGenerator->generate("app_login"));
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
