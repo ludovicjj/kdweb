@@ -14,6 +14,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use DateTimeImmutable;
+use DateInterval;
 
 class CreateUserCommand extends Command
 {
@@ -104,6 +106,10 @@ class CreateUserCommand extends Command
              ->setPassword($plainPassword)
              ->setRoles($role)
              ->setIsVerified($isVerified);
+
+        if (!$isVerified) {
+            $user->setAccountMustBeVerifiedBefore((new DateTimeImmutable())->add(new DateInterval("P1D")));
+        }
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
