@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use DateTimeImmutable;
 
 class UserChecker implements UserCheckerInterface
 {
@@ -25,7 +26,7 @@ class UserChecker implements UserCheckerInterface
             return;
         }
 
-        // Condition will be executed before guard check if password is valid
+        // Condition will be executed before guard method checkCredentials() is valid
     }
 
     public function checkPostAuth(UserInterface $user): void
@@ -34,12 +35,16 @@ class UserChecker implements UserCheckerInterface
             return;
         }
 
-        // User is auth now check if user is verified
+        // Credentials are valid now check if user is verified
+        // Only user register by login form are impacted by this condition
+        // All user register by discord are verified
         if (!$user->getIsVerified()) {
+            /** @var DateTimeImmutable $verifiedBefore */
+            $verifiedBefore = $user->getAccountMustBeVerifiedBefore();
+
             throw new CustomUserMessageAccountStatusException(
                 "Votre compte n'est pas encore activé. Veuillez vérifié vos e-mail pour activer
-                 votre compte avant le 
-                {$user->getAccountMustBeVerifiedBefore()->format('d/m/Y à H\hi')}"
+                 votre compte avant le {$verifiedBefore->format('d/m/Y à H\hi')}"
             );
         }
 
