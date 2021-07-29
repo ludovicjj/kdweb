@@ -70,6 +70,7 @@ class RegistrationController extends AbstractController
         if (
             $user->getRegistrationToken() === null ||
             $user->getRegistrationToken() !== $request->attributes->get('token') ||
+            $user->getAccountMustBeVerifiedBefore() === null ||
             $this->isVerifiedBeforeEndTime($user->getAccountMustBeVerifiedBefore())
         ) {
             throw new AccessDeniedException();
@@ -89,7 +90,7 @@ class RegistrationController extends AbstractController
 
     private function isVerifiedBeforeEndTime(DateTimeImmutable $endDate): bool
     {
-        $startDate = new DateTimeImmutable('now');
-        return $startDate > $endDate;
+        $now = new DateTimeImmutable('now');
+        return $now > $endDate;
     }
 }
