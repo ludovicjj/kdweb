@@ -76,19 +76,23 @@ class AuthenticationSubscriber implements EventSubscriberInterface
     {
         $userIP = $this->getUserIP();
         $securityToken = $event->getAuthenticationToken();
-        ['email' => $emailEntered] = $securityToken->getCredentials();
+        $credentials = $securityToken->getCredentials();
 
-        $this->securityLogger->info(
-            sprintf(
-                "Anonymous user with IP: '%s' fail authentication with the following email : '%s'",
-                $userIP,
-                $emailEntered
-            )
-        );
+        if (is_array($credentials) && array_key_exists("email", $credentials)) {
+            $emailEntered = $credentials["email"];
 
-        // Add Failed Authentication Attempt only if account exist.
-        if (!$event->getAuthenticationException() instanceof UsernameNotFoundException) {
-            $this->forceChecker->addFailedAuthAttempt($emailEntered, $userIP);
+            $this->securityLogger->info(
+                sprintf(
+                    "Anonymous user with IP: '%s' fail authentication with the following email : '%s'",
+                    $userIP,
+                    $emailEntered
+                )
+            );
+
+            // Add Failed Authentication Attempt only if account exist.
+            if (!$event->getAuthenticationException() instanceof UsernameNotFoundException) {
+                $this->forceChecker->addFailedAuthAttempt($emailEntered, $userIP);
+            }
         }
     }
 
