@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\DataFixtures\Faker\CustomNativeLoader;
 use App\Entity\Article;
 use App\Entity\Picture;
+use App\Entity\User;
 use App\Service\FileUploader;
 use App\Utils\DateTimeImmutableTrait;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -13,6 +14,8 @@ use Nelmio\Alice\Loader\NativeLoader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use DateTimeImmutable;
+use DateInterval;
 
 class DevFixtures extends Fixture
 {
@@ -75,6 +78,12 @@ class DevFixtures extends Fixture
                 $slug = $this->slugger->slug(strtolower($title)) . '-' . $randomDate['dateString'];
                 $object->setCreatedAt($randomDate['dateObject']);
                 $object->setSlug($slug);
+            }
+            if ($object instanceof User) {
+                $isVerified = $object->getIsVerified();
+                if (!$isVerified) {
+                    $object->setAccountMustBeVerifiedBefore((new DateTimeImmutable())->add(new DateInterval("P1D")));
+                }
             }
 
             $manager->persist($object);
