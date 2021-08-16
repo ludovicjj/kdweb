@@ -23,7 +23,7 @@ trait TestTrait
         return $client;
     }
 
-    private function purgeDatabaseBeforeTest(string $table): void
+    private function purgeTableBeforeTest(string $table): void
     {
         /** @var KernelInterface $kernel */
         $kernel = self::bootKernel();

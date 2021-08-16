@@ -38,7 +38,7 @@ class RegistrationControllerTest extends WebTestCase
     public function testRegistrationFormWithSuccess()
     {
         $client = $this->clientGoesOnPage("GET", "/register");
-        $this->purgeDatabaseBeforeTest("users");
+        $this->purgeTableBeforeTest("users");
 
         $client->submitForm(
             "Valider",
