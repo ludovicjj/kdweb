@@ -53,8 +53,10 @@ class RegistrationHandler extends AbstractHandler
     {
         /** @var RegistrationDTO $dto */
         $dto = $this->form->getData();
+
         /** @var string $email */
         $email = $dto->getEmail();
+
         /** @var string $plainPassword */
         $plainPassword = $dto->getPassword();
 
@@ -73,16 +75,16 @@ class RegistrationHandler extends AbstractHandler
         /** @var DateTimeImmutable $tokenLifeDateTime */
         $tokenLifeDateTime =  $user->getAccountMustBeVerifiedBefore();
 
-//        $this->sendMail->send([
-//            'recipient_email' => $user->getEmail(),
-//            'subject' => 'Vérification de votre adresse email pour activer votre compte',
-//            'html_template' => 'emails/registration.html.twig',
-//            'context' => [
-//                'userId' => $user->getId(),
-//                'registrationToken' => $registrationToken,
-//                'tokenLifeTime' => $tokenLifeDateTime->format('d/m/Y à H:i')
-//            ]
-//        ]);
+        $this->sendMail->send([
+            'recipient_email' => $user->getEmail(),
+            'subject' => 'Vérification de votre adresse email pour activer votre compte',
+            'html_template' => 'emails/registration.html.twig',
+            'context' => [
+                'userId' => $user->getId(),
+                'registrationToken' => $registrationToken,
+                'tokenLifeTime' => $tokenLifeDateTime->format('d/m/Y à H:i')
+            ]
+        ]);
 
         /** @var FlashBagInterface $flashBag */
         $flashBag = $this->session->getFlashBag();

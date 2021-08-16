@@ -13,7 +13,7 @@ class RegistrationDTO
      *     message="Le champs email ne peut être vide."
      * )
      * @Assert\Email(
-     *     message="'{{ value }}' n'est pas une adresse email valide."
+     *     message="{{ value }} n'est pas une adresse email valide."
      * )
      * @Assert\Length(
      *     max=180,
