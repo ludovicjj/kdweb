@@ -34,4 +34,22 @@ class RegistrationControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(403, "Potential Bot fill hidden field.");
         $this->assertRouteSame("app_register");
     }
+
+    public function testRegistrationFormWithSuccess()
+    {
+        $client = $this->clientGoesOnPage("GET", "/register");
+        $this->purgeDatabaseBeforeTest("users");
+
+        $client->submitForm(
+            "Valider",
+            [
+                "registration_form[email]" => "test@contact.com",
+                "registration_form[password][first]" => "John-doe-123",
+                "registration_form[password][second]" => "John-doe-123",
+                "registration_form[agreeTerms]" => true,
+            ]
+        );
+        $this->assertResponseIsSuccessful();
+        $this->assertRouteSame("app_login");
+    }
 }
