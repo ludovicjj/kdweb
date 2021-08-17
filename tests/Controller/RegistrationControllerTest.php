@@ -2,25 +2,28 @@
 
 namespace App\Tests\Controller;
 
-use App\Tests\TestTrait;
+use App\Tests\FunctionalTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Generator;
 
 class RegistrationControllerTest extends WebTestCase
 {
-    use TestTrait;
+    use FunctionalTestTrait;
 
     public function testGetRequestToRegistrationPage(): void
     {
-        $this->clientGoesOnPage("GET", "/register");
+        $this->clientGoesOnPageWithFollowRedirect("GET", "/register");
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'Créer un compte utilisateur');
     }
 
+    /**
+     * @testdox Test Honey Pot.
+     */
     public function testHoneyPot(): void
     {
-        $client = $this->clientGoesOnPage("GET", "/register");
+        $client = $this->clientGoesOnPageWithFollowRedirect("GET", "/register");
         $client->submitForm(
             "Valider",
             [
@@ -37,25 +40,24 @@ class RegistrationControllerTest extends WebTestCase
         $this->assertRouteSame("app_register");
     }
 
+    /**
+     * @testdox Test registration form with valid Data
+     */
     public function testRegistrationFormWithSuccess()
     {
-        $client = static::createClient();
-        $crawler = $client->request("GET", "/register");
-        $this->purgeTableBeforeTest("users");
-
-        $form = $crawler->selectButton('Valider')->form([
+        $client = $this->clientGoesOnPageWithFollowRedirect("GET", "/register");
+        $client->submitForm("Valider", [
             "registration_form[email]" => "test@contact.com",
             "registration_form[password][first]" => "John-doe-123",
             "registration_form[password][second]" => "John-doe-123",
             "registration_form[agreeTerms]" => true
         ]);
-        $client->submit($form);
-        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
-        $client->followRedirect();
         $this->assertRouteSame("app_login");
     }
 
     /**
+     * @testdox Test registration form with invalid Data
+     *
      * @param array $formData
      * @param string $errorMessage
      * @dataProvider provideBadRequestsForRegistrationForm
@@ -65,12 +67,8 @@ class RegistrationControllerTest extends WebTestCase
         string $errorMessage
     ): void
     {
-        $client = static::createClient();
-        $crawler = $client->request("GET", "/register");
-        $this->purgeTableBeforeTest("users");
-
-        $form = $crawler->selectButton('Valider')->form($formData);
-        $client->submit($form);
+        $client = $this->clientGoesOnPageWithFollowRedirect("GET", "/register");
+        $client->submitForm("Valider", $formData);
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertSelectorTextContains('span.form-error-message', $errorMessage);
     }
