@@ -212,6 +212,10 @@ class AuthenticationSubscriber implements EventSubscriberInterface
     {
         /** @var User $user */
         $user = $securityToken->getUser();
-        return $user->getUsername();
+
+        if ($user instanceof User) {
+            return $user->getUsername();
+        }
+        return "anonymous user";
     }
 }
