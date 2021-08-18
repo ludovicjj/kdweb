@@ -15,6 +15,7 @@ class PublicUrlSmokeTest extends WebTestCase
 
     public function testPublicUri(): void
     {
+        $client = $this->createClientAndFollowRedirect();
         $publicUri = $this->getPublicUri();
         $countPublicUri = count($publicUri);
         $countUriSuccessfulLoaded = 0;
@@ -23,8 +24,8 @@ class PublicUrlSmokeTest extends WebTestCase
 
         foreach ($publicUri as $uri)
         {
-            $this->client->request("GET", $uri);
-            if (in_array($this->client->getResponse()->getStatusCode(), [Response::HTTP_OK, Response::HTTP_FOUND])) {
+            $client->request("GET", $uri);
+            if ($client->getResponse()->getStatusCode() === Response::HTTP_OK) {
                 $countUriSuccessfulLoaded++;
             } else {
                 $uriFailureLoaded[] = $uri;
