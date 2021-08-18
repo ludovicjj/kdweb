@@ -35,7 +35,7 @@ class RegistrationController extends AbstractController
     }
 
     /**
-     * @Route("/register", name="app_register", methods={"GET", "POST"})
+     * @Route("/register", name="app_register", methods={"GET", "POST"}, defaults={"_public_access": true})
      *
      * @param Request $request
      * @return Response

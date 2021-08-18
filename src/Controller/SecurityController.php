@@ -24,7 +24,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/login", name="app_login", methods={"GET", "POST"})
+     * @Route("/login", name="app_login", methods={"GET", "POST"}, defaults={"_public_access": true})
      *
      * @param AuthenticationUtils $authenticationUtils
      * @param Request $request
@@ -63,7 +63,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/logout", name="app_logout", methods={"GET"})
+     * @Route("/logout", name="app_logout", methods={"GET"}, defaults={"_public_access": true})
      */
     public function logout(): void
     {
