@@ -32,6 +32,7 @@
         "symfony/yaml": "5.2.*"
     },
     "require-dev": {
+        "dbrekelmans/bdi": "^0.3.0",
         "doctrine/doctrine-fixtures-bundle": "^3.4",
         "nelmio/alice": "^3.8",
         "phpstan/phpstan": "^0.12.88",
@@ -41,6 +42,7 @@
         "symfony/debug-bundle": "^5.2",
         "symfony/maker-bundle": "^1.31",
         "symfony/monolog-bundle": "^3.0",
+        "symfony/panther": "^1.1",
         "symfony/phpunit-bridge": "^5.3",
         "symfony/stopwatch": "^5.2",
         "symfony/twig-bundle": "^5.2",

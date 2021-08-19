@@ -42,9 +42,14 @@ class UserChecker implements UserCheckerInterface
             /** @var DateTimeImmutable $verifiedBefore */
             $verifiedBefore = $user->getAccountMustBeVerifiedBefore();
 
+//            throw new CustomUserMessageAccountStatusException(
+//                "Votre compte n'est pas encore activé. Veuillez vérifié vos e-mail pour activer
+//                 votre compte avant le {$verifiedBefore->format('d/m/Y à H\hi')}"
+//            );
+
+            // update message, delete it after test working
             throw new CustomUserMessageAccountStatusException(
-                "Votre compte n'est pas encore activé. Veuillez vérifié vos e-mail pour activer
-                 votre compte avant le {$verifiedBefore->format('d/m/Y à H\hi')}"
+                "Vous devez confirmer votre compte avant de vous connecter."
             );
         }
 
