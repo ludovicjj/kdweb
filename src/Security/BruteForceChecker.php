@@ -37,7 +37,9 @@ class BruteForceChecker
     public function addFailedAuthAttempt(string $emailEntered, ?string $userIp): void
     {
         if ($this->authLogRepository->isBlackListedWithThisAttemptFailure($emailEntered, $userIp)) {
-            $this->authLogRepository->addFailedAuthAttempt($emailEntered, $userIp, true);
+            if (!$this->authLogRepository->isAccountAlreadyBlacklisted($emailEntered, $userIp)) {
+                $this->authLogRepository->addFailedAuthAttempt($emailEntered, $userIp, true);
+            }
         } else {
             $this->authLogRepository->addFailedAuthAttempt($emailEntered, $userIp);
         }
