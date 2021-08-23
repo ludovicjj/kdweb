@@ -122,12 +122,6 @@ class AuthLogRepository extends ServiceEntityRepository
      */
     public function isBlackListedWithThisAttemptFailure(string $emailEntered, ?string $userIp): bool
     {
-        // 1- 0 > 3
-        // 2- 1 > 3
-        // 3- 2 > 3
-        // 4- 3 > 3
-        // 5- 4 > 3 (je black list) 8h26
-        // 6- 5 > 3 (ne fait pas le up si le compte est deja black list) 8h26
         return $this->getRecentFailedAuthAttempt($emailEntered, $userIp) > self::MAX_FAILED_AUTH_ATTEMPTS - 2;
     }
 
