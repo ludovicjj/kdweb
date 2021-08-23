@@ -71,8 +71,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
         $this->bruteForceCheck = $bruteForceChecker;
-        $this->authLogRepository = $authLogRepository;
         $this->hCaptcha = $hCaptcha;
+        $this->authLogRepository = $authLogRepository;
     }
 
     public function supports(Request $request): bool
@@ -84,29 +84,16 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     /**
      * @param Request $request
      * @return array<string>
-     *
-     * @throws NonUniqueResultException
-     * @throws NoResultException
-     * @throws ClientExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      */
     public function getCredentials(Request $request): array
     {
-        if (
-            $this->authLogRepository->getRecentFailedAuthAttempt($request->request->get('email'), $request->getClientIp()) >= 3
-            && !$this->hCaptcha->isHCaptchaValid()
-        ) {
-            throw new CustomUserMessageAccountStatusException("La vérification anti-spam a échoué. Veuillez réessayez.");
-        }
-
         $credentials = [
             'email' => $request->request->get('email'),
             'password' => $request->request->get('password'),
             'csrf_token' => $request->request->get('_csrf_token'),
+            "user_ip" => $request->getClientIp()
         ];
+
         $request->getSession()->set(
             Security::LAST_USERNAME,
             $credentials['email']
@@ -118,18 +105,33 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     /**
      * @param mixed $credentials
      * @param UserProviderInterface $userProvider
+     *
      * @return User
+     *
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws NoResultException
      * @throws NonUniqueResultException
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function getUser($credentials, UserProviderInterface $userProvider): User
     {
-        sleep(1);
-
+        //sleep(1);
         if ($endOfBlacklisting = $this->bruteForceCheck->getEndOfBlackListing()) {
             throw new CustomUserMessageAccountStatusException("Il semblerait que vous avez oubliez votre mot de passe.
             Par mesure de sécurité vous devez attendre jusqu'à {$endOfBlacklisting} avant de tenter de vous connecter.
             Vous pouvez cliqué sur le lien ci-dessous pour effectuer une demande de modification de mot de passe.");
         }
+
+        if (
+            $this->authLogRepository->getRecentFailedAuthAttempt($credentials["email"], $credentials["user_ip"]) >= 3
+            && !$this->hCaptcha->isHCaptchaValid()
+        ) {
+            throw new CustomUserMessageAccountStatusException("La vérification anti-spam a échoué. Veuillez réessayez.");
+        }
+
 
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
 
