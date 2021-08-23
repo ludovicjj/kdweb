@@ -12,7 +12,7 @@ use Symfony\Component\Panther\PantherTestCase;
 use Generator;
 use Exception;
 
-class SecurityControllerTest extends PantherTestCase
+class SecurityControllerE2ETest extends PantherTestCase
 {
     /** @var EntityManagerInterface $entityManger */
     private $entityManger;
