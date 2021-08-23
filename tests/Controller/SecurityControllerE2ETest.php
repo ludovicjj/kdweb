@@ -14,13 +14,13 @@ use Exception;
 
 class SecurityControllerE2ETest extends PantherTestCase
 {
-    /** @var EntityManagerInterface $entityManger */
-    private $entityManger;
+    /** @var EntityManagerInterface $entityManager */
+    private $entityManager;
 
     protected function setUp(): void
     {
         $kernel = self::bootKernel();
-        $this->entityManger = $kernel->getContainer()->get('doctrine')->getManager();
+        $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
         $this->truncateTable("users");
     }
 
@@ -111,8 +111,8 @@ class SecurityControllerE2ETest extends PantherTestCase
     private function truncateTable(string $table): void
     {
         try {
-            $this->entityManger->getConnection()->executeQuery("TRUNCATE TABLE `{$table}`");
-            $this->entityManger->getConnection()->close();
+            $this->entityManager->getConnection()->executeQuery("TRUNCATE TABLE `{$table}`");
+            $this->entityManager->getConnection()->close();
         } catch (Exception $exception) {
 
         }
@@ -130,7 +130,7 @@ class SecurityControllerE2ETest extends PantherTestCase
             $user->setAccountMustBeVerifiedBefore((new DateTimeImmutable())->add(new DateInterval("P1D")));
         }
 
-        $this->entityManger->persist($user);
-        $this->entityManger->flush();
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
     }
 }
