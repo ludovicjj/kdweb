@@ -32,7 +32,22 @@ class SecurityControllerTest extends WebTestCase
             $this->createNewUserInDatabase("exemple@contact.com", "password", true);
             self::$initialized = true;
         }
+    }
 
+    public function testLoginFormWithNotVerifiedAccount(): void
+    {
+        $this->createNewUserInDatabase("unverified@contact.com", "password", false);
+
+        $formData = [
+            "email" => "unverified@contact.com",
+            "password" => "password"
+        ];
+
+        $this->sendRequestToLogin($formData);
+        $this->assertSelectorTextContains(
+            'div[class="alert alert-danger"]',
+            "Votre compte n'est pas encore activé. Veuillez vérifié vos e-mail pour activer"
+        );
     }
 
     /**
