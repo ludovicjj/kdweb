@@ -17,31 +17,33 @@ class SecurityControllerTest extends WebTestCase
     /** @var KernelBrowser */
     protected $client;
 
+    protected static $initialized = false;
+
     protected function setUp(): void
     {
         $this->client = static::createClient();
         $this->client->followRedirects();
 
         $this->entityManager = self::$container->get("doctrine")->getManager();
-        $this->truncateTable("users");
+
+        if (!self::$initialized) {
+            $this->truncateTable("users");
+            $this->truncateTable("auth_logs");
+            $this->createNewUserInDatabase("exemple@contact.com", "password", true);
+            self::$initialized = true;
+        }
+
     }
 
     /**
      * @dataProvider provideBadCredentials
-     * @param int $attemptLoginCount
      * @param array $formData
      * @@param string $errorMessage
      */
-    public function testLoginFormBruteForce(int $attemptLoginCount, array $formData, string $errorMessage): void
+    public function testLoginFormBruteForce(array $formData, string $errorMessage): void
     {
-        // create user for test
-        $this->createNewUserInDatabase("exemple@contact.com", "password", true);
-
-        // go to login, fill form and send data
         $this->sendRequestToLogin($formData);
-
-        // check error message
-         $this->assertSelectorTextContains('div[class="alert alert-danger"]', $errorMessage);
+        $this->assertSelectorTextContains('div[class="alert alert-danger"]', $errorMessage);
     }
 
     private function sendRequestToLogin(array $formData): void
@@ -57,12 +59,51 @@ class SecurityControllerTest extends WebTestCase
     public function provideBadCredentials()
     {
         yield [
-            1,
             [
                 "email" => "exemple@contact.com",
                 "password" => "bad-password"
             ],
             "Identifiants invalides."
+        ];
+
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "Identifiants invalides."
+        ];
+
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "Identifiants invalides."
+        ];
+
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "La vérification anti-spam a échoué. Veuillez réessayez."
+        ];
+
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "La vérification anti-spam a échoué. Veuillez réessayez."
+        ];
+
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "Il semblerait que vous avez oubliez votre mot de passe. Par mesure de sécurité vous devez attendre"
         ];
     }
 }
