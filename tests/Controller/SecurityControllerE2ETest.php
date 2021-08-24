@@ -2,26 +2,33 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\User;
+use App\Tests\TestTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use DateTimeImmutable;
-use DateInterval;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\TimeoutException;
 use Symfony\Component\Panther\PantherTestCase;
 use Generator;
-use Exception;
 
 class SecurityControllerE2ETest extends PantherTestCase
 {
+    use TestTrait;
+
     /** @var EntityManagerInterface $entityManager */
-    private $entityManager;
+    protected $entityManager;
+
+    protected static $initialized = false;
 
     protected function setUp(): void
     {
         $kernel = self::bootKernel();
         $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
-        $this->truncateTable("users");
+
+        if (!self::$initialized) {
+            $this->truncateTable("users");
+            $this->truncateTable("auth_logs");
+            $this->createNewUserInDatabase("exemple@contact.com", "password", false);
+            self::$initialized = true;
+        }
     }
 
     /**
@@ -31,18 +38,13 @@ class SecurityControllerE2ETest extends PantherTestCase
      * @param string $screenshotPath
      * @param string $errorMessage
      */
-    public function testLoginFail(
+    public function testCaptchaWithThreeFailedAttemptLogin(
         int $attemptCount,
         array $formData,
         string $screenshotPath,
         string $errorMessage
     ): void
     {
-        if ($attemptCount === 1) {
-            $this->truncateTable("auth_logs");
-        }
-
-        $this->createNewUserInDatabase("exemple@contact.fr", "Password-1", false);
         $client = self::createPantherClient();
         $crawler = $client->request("GET", "/login");
         $form = $crawler->selectButton("Se connecter")->form($formData);
@@ -51,7 +53,7 @@ class SecurityControllerE2ETest extends PantherTestCase
         $client->takeScreenshot($screenshotPath);
         $this->assertSelectorTextContains('div[class="alert alert-danger"]', $errorMessage);
 
-        if ($attemptCount === 4) {
+        if ($attemptCount >= 3) {
             try {
                 $client->waitFor('iframe', 3);
             } catch (NoSuchElementException $error) {
@@ -70,17 +72,7 @@ class SecurityControllerE2ETest extends PantherTestCase
         yield [
             1,
             [
-                "email" => "exemple@contact.fr",
-                "password" => "Password-1"
-            ],
-            "./var/screenshots/unverified-user.png",
-            "Votre compte n'est pas encore activé. Veuillez vérifié vos e-mail pour activer votre compte avant le"
-        ];
-
-        yield [
-            2,
-            [
-                "email" => "exemple@contact.fr",
+                "email" => "exemple@contact.com",
                 "password" => "Bad-password"
             ],
             "./var/screenshots/invalid-password-1.png",
@@ -88,9 +80,9 @@ class SecurityControllerE2ETest extends PantherTestCase
         ];
 
         yield [
-            3,
+            2,
             [
-                "email" => "exemple@contact.fr",
+                "email" => "exemple@contact.com",
                 "password" => "Bad-password"
             ],
             "./var/screenshots/invalid-password-2.png",
@@ -98,39 +90,23 @@ class SecurityControllerE2ETest extends PantherTestCase
         ];
 
         yield [
+            3,
+            [
+                "email" => "exemple@contact.com",
+                "password" => "Bad-password"
+            ],
+            "./var/screenshots/invalid-password-3.png",
+            "Identifiants invalides."
+        ];
+
+        yield [
             4,
             [
-                "email" => "exemple@contact.fr",
+                "email" => "exemple@contact.com",
                 "password" => "Bad-password"
             ],
             "./var/screenshots/invalid-hcaptcha.png",
             "La vérification anti-spam a échoué. Veuillez réessayez."
         ];
-    }
-
-    private function truncateTable(string $table): void
-    {
-        try {
-            $this->entityManager->getConnection()->executeQuery("TRUNCATE TABLE `{$table}`");
-            $this->entityManager->getConnection()->close();
-        } catch (Exception $exception) {
-
-        }
-
-    }
-
-    private function createNewUserInDatabase(string $email, string $password, bool $isVerified): void
-    {
-        $user = (new User())
-            ->setEmail($email)
-            ->setPassword($password)
-            ->setIsVerified($isVerified);
-
-        if (!$isVerified) {
-            $user->setAccountMustBeVerifiedBefore((new DateTimeImmutable())->add(new DateInterval("P1D")));
-        }
-
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
     }
 }
