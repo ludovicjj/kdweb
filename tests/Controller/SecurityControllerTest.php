@@ -6,6 +6,8 @@ use App\Tests\TestTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Dotenv\Dotenv;
+use Generator;
 
 class SecurityControllerTest extends WebTestCase
 {
@@ -18,6 +20,7 @@ class SecurityControllerTest extends WebTestCase
     protected $client;
 
     protected static $initialized = false;
+    protected static $reset = false;
 
     protected function setUp(): void
     {
@@ -61,6 +64,26 @@ class SecurityControllerTest extends WebTestCase
         $this->assertSelectorTextContains('div[class="alert alert-danger"]', $errorMessage);
     }
 
+    /**
+     * @dataProvider provideBadCredentialsWithCaptchaDisabled
+     * @param array $formData
+     * @param string $errorMessage
+     */
+    public function testBruteForceLoginFormWithCaptchaDisabled(array $formData, string $errorMessage): void
+    {
+        if (!self::$reset) {
+            $this->truncateTable("auth_logs");
+            self::$reset = true;
+        }
+        $dotenv = new Dotenv();
+        $dotenv->populate([
+            "APP_CAPTCHA_ENABLED" => false
+        ]);
+
+        $this->sendRequestToLogin($formData);
+        $this->assertSelectorTextContains('div[class="alert alert-danger"]', $errorMessage);
+    }
+
     private function sendRequestToLogin(array $formData): void
     {
         $crawler = $this->client->request("GET", "/login");
@@ -71,7 +94,7 @@ class SecurityControllerTest extends WebTestCase
     }
 
 
-    public function provideBadCredentials()
+    public function provideBadCredentials(): Generator
     {
         yield [
             [
@@ -111,6 +134,57 @@ class SecurityControllerTest extends WebTestCase
                 "password" => "bad-password"
             ],
             "La vérification anti-spam a échoué. Veuillez réessayez."
+        ];
+
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "Il semblerait que vous avez oubliez votre mot de passe. Par mesure de sécurité vous devez attendre"
+        ];
+    }
+
+    public function provideBadCredentialsWithCaptchaDisabled(): Generator
+    {
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "Identifiants invalides."
+        ];
+
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "Identifiants invalides."
+        ];
+
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "Identifiants invalides."
+        ];
+
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "Identifiants invalides."
+        ];
+
+        yield [
+            [
+                "email" => "exemple@contact.com",
+                "password" => "bad-password"
+            ],
+            "Identifiants invalides."
         ];
 
         yield [

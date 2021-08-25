@@ -107,7 +107,6 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
      * @param UserProviderInterface $userProvider
      *
      * @return User
-     *
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws NoResultException
@@ -125,9 +124,14 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             Vous pouvez cliqué sur le lien ci-dessous pour effectuer une demande de modification de mot de passe.");
         }
 
+        $isCaptchaEnabledTest = $_ENV["APP_CAPTCHA_ENABLED"] ?? null;
         if (
-            $this->authLogRepository->getRecentFailedAuthAttempt($credentials["email"], $credentials["user_ip"]) >= 3
-            && !$this->hCaptcha->isHCaptchaValid()
+            $isCaptchaEnabledTest !== false &&
+            (
+                $this->authLogRepository->getRecentFailedAuthAttempt($credentials["email"], $credentials["user_ip"]) >= 3 &&
+                !$this->hCaptcha->isHCaptchaValid()
+            )
+
         ) {
             throw new CustomUserMessageAccountStatusException("La vérification anti-spam a échoué. Veuillez réessayez.");
         }
