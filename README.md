@@ -38,6 +38,7 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] Les [contraintes](https://symfony.com/doc/current/reference/constraints.html) de validation
 - [x] Contraintes de validation [personnalisées](https://symfony.com/doc/current/validation/custom_constraint.html)
 - [x] [FormEvent](https://symfony.com/doc/current/form/events.html)
+- [x] Le [paramConverter](https://symfony.com/bundles/SensioFrameworkExtraBundle/current/index.html)
 
 ## Compiler passes
 
