@@ -46,7 +46,7 @@ class FileUploader
 
         return [
             'fileName' => $fileName,
-            'filePath' => $this->uploadDir . $fileName
+            'filePath' => $this->uploadDir . '/' . $fileName
         ];
     }
 
