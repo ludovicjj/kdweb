@@ -106,4 +106,14 @@ class ArticleController
     {
         dd($start);
     }
+
+    /**
+     * @Route("/get-article-with-custom-converter/{datetime}")
+     * @ParamConverter("article", converter="my_custom_converter")
+     * @param Article $article
+     */
+    public function getArticleWithCustomParamConverter(Article $article)
+    {
+        dd($article);
+    }
 }

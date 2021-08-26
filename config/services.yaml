@@ -66,3 +66,7 @@ services:
         arguments:
             $discordClientId: '%app.discord_client_id%'
             $discordClientSecret: '%app.discord_client_secret%'
+
+    App\ParamConverter\ArticleConverter:
+        tags:
+            - {name: request.param_converter, converter: my_custom_converter}
