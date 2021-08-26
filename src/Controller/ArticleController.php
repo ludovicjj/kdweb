@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Entity\Picture;
 use App\Repository\ArticleRepository;
+use DateTimeImmutable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -95,5 +96,14 @@ class ArticleController
     public function getArticleAndPictureWithParamConverter(Article $article, Picture $picture)
     {
         dd($article, $picture);
+    }
+
+    /**
+     * @Route("/datetime/{start}")
+     * @param DateTimeImmutable $start
+     */
+    public function getDateTimeImmutableWithDateTimeConverter(DateTimeImmutable $start)
+    {
+        dd($start);
     }
 }
