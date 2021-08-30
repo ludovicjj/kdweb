@@ -30,6 +30,7 @@ class CreateArticleType extends AbstractType
         ])
         ->add("categories", EntityType::class, [
             "class" => Category::class,
+            "by_reference" => false,
             "choice_label" => "name",
             "multiple" => true,
             "expanded" => true,
