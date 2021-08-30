@@ -4,6 +4,7 @@
 namespace App\DTO;
 
 
+use App\Entity\Category;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -47,6 +48,19 @@ class CreateArticleDTO
     public function getCategories()
     {
         return $this->categories;
+    }
+
+    public function addCategory(Category $category): void
+    {
+        if ($this->categories->contains($category)) {
+            return;
+        }
+        $this->categories[] = $category;
+    }
+
+    public function removeCategory(Category $category): void
+    {
+        $this->categories->removeElement($category);
     }
 
     public function getPicture()
