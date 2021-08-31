@@ -36,7 +36,7 @@ class ArticleController extends AbstractController
         }
 
         $handler = $this->handlerFactory->createHandler(CreateArticleHandler::class);
-        if ($handler->handle($request)) {
+        if ($handler->handle($request, null, null, ["user_role" => $user->getRoles()])) {
             return new RedirectResponse("app_user_account_home");
         }
 
