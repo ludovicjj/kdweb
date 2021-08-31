@@ -6,6 +6,7 @@ namespace App\Form;
 
 use App\DTO\CreateArticleDTO;
 use App\Entity\Category;
+use App\EventSubscriber\CreateArticleSubscriber;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -20,33 +21,35 @@ class CreateArticleType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add("title", TextType::class, [
-            "label" => "Titre de l'article",
-            "required" => true
-        ])
-        ->add("content", TextareaType::class, [
-            "label" => "Le contenu de l'article",
-            "required" => true
-        ])
-        ->add("categories", EntityType::class, [
-            "class" => Category::class,
-            "by_reference" => false,
-            "choice_label" => "name",
-            "multiple" => true,
-            "expanded" => true,
-            "required" => true,
-            "label" => "Catégories de l'article",
-        ])
-        ->add("picture", FileType::class, [
-            "label" => "Image de l'article",
-            "required" => true
-        ])
-        ->add("publish", SubmitType::class, [
-            "label" => "Publier l'article",
-            "attr" => [
-                "class" => "btn btn-success"
-            ]
-        ]);
+        $builder
+            ->add("title", TextType::class, [
+                "label" => "Titre de l'article",
+                "required" => true
+            ])
+            ->add("content", TextareaType::class, [
+                "label" => "Le contenu de l'article",
+                "required" => true
+            ])
+            ->add("categories", EntityType::class, [
+                "class" => Category::class,
+                "by_reference" => false,
+                "choice_label" => "name",
+                "multiple" => true,
+                "expanded" => true,
+                "required" => true,
+                "label" => "Catégories de l'article",
+            ])
+            ->add("picture", FileType::class, [
+                "label" => "Image de l'article",
+                "required" => true
+            ])
+            ->add("publish", SubmitType::class, [
+                "label" => "Publier l'article",
+                "attr" => [
+                    "class" => "btn btn-success"
+            ]])
+            ->addEventSubscriber(new CreateArticleSubscriber())
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -60,7 +63,8 @@ class CreateArticleType extends AbstractType
                     $form->get('categories')->getData(),
                     $form->get('picture')->getData()
                 );
-            }
+            },
+            'user_role'=> []
         ]);
     }
 }
