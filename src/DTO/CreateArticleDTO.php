@@ -1,25 +1,53 @@
 <?php
 
-
 namespace App\DTO;
-
 
 use App\Entity\Category;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class CreateArticleDTO
 {
-    /** @var string|null $title */
+    /**
+     * @var string|null $title
+     * @Assert\NotBlank(
+     *     message="Le champs titre est obligatoire."
+     * )
+     * @Assert\Length(
+     *     min = 3,
+     *     max = 255,
+     *     minMessage = "Le titre doit au moins contenir {{ limit }} caracters",
+     *     maxMessage = "Le titre ne peux dépasser {{ limit }} caracters"
+     * )
+     */
     private $title;
 
-    /** @var string|null $content */
+    /**
+     * @var string|null $content
+     *
+     * @Assert\NotBlank(
+     *     message="Le champs contenu est obligatoire."
+     * )
+     */
     private $content;
 
-    /** @var ArrayCollection|null $categories */
+    /**
+     * @Assert\NotNull(
+     *     message="Vous devez choisir une catégorie."
+     * )
+     * @var ArrayCollection|null $categories
+     */
     private $categories;
 
-    /** @var UploadedFile|null $picture */
+    /**
+     * @var UploadedFile|null $picture
+     *
+     * @Assert\Image(
+     *     maxSize = "1M",
+     *     maxSizeMessage = "Maximum {{ limit }} {{ suffix }}"
+     * )
+     */
     private $picture;
 
     public function __construct(
