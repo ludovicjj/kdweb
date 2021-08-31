@@ -12,7 +12,6 @@ class CreateArticleHandler extends AbstractHandler
     protected function configure(OptionsResolver $resolver): void
     {
         $resolver->setDefault("form_type", CreateArticleType::class);
-        $resolver->setDefault("user_role", []);
     }
 
     protected function process(): void
