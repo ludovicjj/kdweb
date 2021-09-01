@@ -39,12 +39,29 @@ class RegistrationDTO
      */
     private $password;
 
+    /**
+     * @var string|null $authorName
+     *
+     * @Assert\NotBlank(
+     *     message="Le champs pseudonyme ne peut être vide."
+     * )
+     *  @Assert\Length(
+     *     min = 3,
+     *     max = 255,
+     *     minMessage = "Le pseudonyme doit comporter au moins {{ limit }} caracteres.",
+     *     maxMessage = "Votre pseudonyme dépasse la limite de caractères accepté."
+     * )
+     */
+    private $authorName;
+
     public function __construct(
         ?string $email,
-        ?string $password
+        ?string $password,
+        ?string $authorName
     ) {
         $this->email = $email;
         $this->password = $password;
+        $this->authorName = $authorName;
     }
 
     public function getEmail(): ?string
@@ -55,5 +72,10 @@ class RegistrationDTO
     public function getPassword(): ?string
     {
         return $this->password;
+    }
+
+    public function getAuthorName(): ?string
+    {
+        return $this->authorName;
     }
 }
