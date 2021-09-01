@@ -8,6 +8,7 @@ use App\Form\FormExtension\RepeatedPasswordType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -22,20 +23,24 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email', EmailType::class, [
+            ->add("email", EmailType::class, [
                 "label" => 'Email',
                 "required" => true,
                 "attr" => [
                     "autofocus" => true
                 ]
             ])
-            ->add('password', RepeatedPasswordType::class)
-            ->add('agreeTerms', CheckboxType::class, [
+            ->add("password", RepeatedPasswordType::class)
+            ->add("authorName", TextType::class, [
+                "label" => "Pseudonyme",
+                "required" => true,
+            ])
+            ->add("agreeTerms", CheckboxType::class, [
                 "label" => "J'accepte les conditions d'utilisation de se site",
-                'mapped' => false,
-                'constraints' => [
+                "mapped" => false,
+                "constraints" => [
                     new isTrue([
-                        'message' => "Vous devez accepter les conditions d'utilisation de se site pour vous inscrire.",
+                        "message" => "Vous devez accepter les conditions d'utilisation de se site pour vous inscrire.",
                     ]),
                 ],
             ])
@@ -45,11 +50,12 @@ class RegistrationFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => RegistrationDTO::class,
-            'empty_data' => function(FormInterface $form){
+            "data_class" => RegistrationDTO::class,
+            "empty_data" => function(FormInterface $form){
                 return new RegistrationDTO(
-                    $form->get('email')->getData(),
-                    $form->get('password')->getData()
+                    $form->get("email")->getData(),
+                    $form->get("password")->getData(),
+                    $form->get("authorName")->getData()
                 );
             }
         ]);
