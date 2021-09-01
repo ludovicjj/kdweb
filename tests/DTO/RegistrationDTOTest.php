@@ -17,6 +17,7 @@ class RegistrationDTOTest extends KernelTestCase
 
     private const VALID_EMAIL_VALUE = "test@contact.com";
     private const VALID_PASSWORD_VALUE = "Password-test-123";
+    private const VALID_AUTHOR_NAME_VALUE = "john";
 
     /** @var ValidatorInterface $validator */
     private $validator;
@@ -38,7 +39,8 @@ class RegistrationDTOTest extends KernelTestCase
     {
         $dto = new RegistrationDTO(
             self::VALID_EMAIL_VALUE,
-            self::VALID_PASSWORD_VALUE
+            self::VALID_PASSWORD_VALUE,
+            self::VALID_AUTHOR_NAME_VALUE
         );
 
         $this->getValidatorErrors($dto, 0);
@@ -54,7 +56,8 @@ class RegistrationDTOTest extends KernelTestCase
     {
         $dto = new RegistrationDTO(
             $data["email"],
-            $data["password"]
+            $data["password"],
+            $data["authorName"]
         );
 
         $errors = $this->getValidatorErrors($dto, 1);
@@ -70,7 +73,8 @@ class RegistrationDTOTest extends KernelTestCase
 
         $dto = new RegistrationDTO(
             self::VALID_EMAIL_VALUE,
-            self::VALID_PASSWORD_VALUE
+            self::VALID_PASSWORD_VALUE,
+            self::VALID_AUTHOR_NAME_VALUE
         );
 
         $errors = $this->getValidatorErrors($dto, 1);
@@ -85,7 +89,8 @@ class RegistrationDTOTest extends KernelTestCase
         yield [
             [
                 "email" => null,
-                "password" => self::VALID_PASSWORD_VALUE
+                "password" => self::VALID_PASSWORD_VALUE,
+                "authorName" => self::VALID_AUTHOR_NAME_VALUE
             ],
             "Le champs email ne peut être vide."
         ];
@@ -93,7 +98,8 @@ class RegistrationDTOTest extends KernelTestCase
         yield [
             [
                 "email" => self::VALID_EMAIL_VALUE,
-                "password" => null
+                "password" => null,
+                "authorName" => self::VALID_AUTHOR_NAME_VALUE
             ],
             "Le champs password ne peut être vide."
         ];
@@ -101,7 +107,8 @@ class RegistrationDTOTest extends KernelTestCase
         yield [
             [
                 "email" => "test@contact",
-                "password" => self::VALID_PASSWORD_VALUE
+                "password" => self::VALID_PASSWORD_VALUE,
+                "authorName" => self::VALID_AUTHOR_NAME_VALUE
             ],
             "\"test@contact\" n'est pas une adresse email valide."
         ];
@@ -109,7 +116,8 @@ class RegistrationDTOTest extends KernelTestCase
         yield [
             [
                 "email" => self::VALID_EMAIL_VALUE,
-                "password" => "password"
+                "password" => "password",
+                "authorName" => self::VALID_AUTHOR_NAME_VALUE
             ],
             "Votre mot de passe doit contenir au minimum 8 caractères avec au moins une majuscule, un chiffre et un caractère spécial."
         ];
