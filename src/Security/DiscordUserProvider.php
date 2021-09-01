@@ -7,10 +7,9 @@ use App\Event\DiscordOAuthEvent;
 use App\Repository\UserRepository;
 use App\Service\PasswordGenerator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -178,7 +177,9 @@ class DiscordUserProvider implements UserProviderInterface
                 "Discord API has been modified or missing data"
             );
         } elseif (!$data["verified"]) {
-            throw new HttpException(Response::HTTP_UNAUTHORIZED, "Discord Account is not verified");
+            throw new CustomUserMessageAuthenticationException(
+                "Vous devez disposer d'un compte discord vérifier."
+            );
         }
 
         return $data;
