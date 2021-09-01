@@ -7,9 +7,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -33,15 +35,20 @@ class DiscordAuthenticator extends AbstractGuardAuthenticator
     /** @var DiscordUserProvider $discordUserProvider */
     private $discordUserProvider;
 
+    /** @var SessionInterface $sessionInterface */
+    private $sessionInterface;
+
     public function __construct(
         CsrfTokenManagerInterface $csrfTokenManager,
         UrlGeneratorInterface $urlGenerator,
-        DiscordUserProvider $discordUserProvider
+        DiscordUserProvider $discordUserProvider,
+        SessionInterface $sessionInterface
     )
     {
         $this->csrfTokenManager = $csrfTokenManager;
         $this->urlGenerator = $urlGenerator;
         $this->discordUserProvider = $discordUserProvider;
+        $this->sessionInterface = $sessionInterface;
     }
 
     public function supports(Request $request): bool
@@ -93,6 +100,8 @@ class DiscordAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
+        $message =  $exception->getMessage();
+        $this->sessionInterface->getFlashBag()->add("danger", $message);
         return new RedirectResponse($this->urlGenerator->generate("app_login"));
     }
 
