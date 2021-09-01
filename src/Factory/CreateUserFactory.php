@@ -2,7 +2,7 @@
 
 namespace App\Factory;
 
-use App\DTO\DTOInterface;
+use App\DTO\AbstractDTO;
 use App\Entity\Author;
 use App\Entity\User;
 use DateTimeImmutable;
@@ -19,7 +19,7 @@ class CreateUserFactory
         $this->tokenGenerator = $tokenGenerator;
     }
 
-    public function build(DTOInterface $dto): User
+    public function build(AbstractDTO $dto): User
     {
         /** @var string $email */
         $email = $dto->getEmail();
