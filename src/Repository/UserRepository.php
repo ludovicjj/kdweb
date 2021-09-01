@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\Author;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -78,12 +79,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         string $randomPassword
     ): User
     {
+        $author = (new Author())->setName($discordUsername);
+
         $user = new User();
         $user
             ->setDiscordId($discordId)
             ->setDiscordUsername($discordUsername)
             ->setEmail($email)
             ->setPassword($randomPassword)
+            ->setAuthor($author)
             ->setIsVerified(true);
 
         $this->_em->persist($user);
