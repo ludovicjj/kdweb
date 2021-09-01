@@ -5,7 +5,7 @@ namespace App\DTO;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\Constraints as Constraint;
 
-class RegistrationDTO
+class RegistrationDTO extends AbstractDTO
 {
     /**
      * @var string|null $email
