@@ -2,8 +2,7 @@
 
 namespace App\Handler;
 
-use App\DTO\RegistrationDTO;
-use App\Entity\User;
+use App\Factory\CreateUserFactory;
 use App\Form\RegistrationFormType;
 use App\HandlerFactory\AbstractHandler;
 use App\Service\SendMail;
@@ -12,9 +11,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use DateTimeImmutable;
-use DateInterval;
 
 class RegistrationHandler extends AbstractHandler
 {
@@ -24,8 +21,8 @@ class RegistrationHandler extends AbstractHandler
     /** @var SessionInterface $session */
     private $session;
 
-    /** @var TokenGeneratorInterface $tokenGenerator */
-    private $tokenGenerator;
+    /** @var CreateUserFactory $userFactory */
+    private $userFactory;
 
     /** @var SendMail $sendMail */
     private $sendMail;
@@ -34,12 +31,12 @@ class RegistrationHandler extends AbstractHandler
         FormFactoryInterface $formFactory,
         EntityManagerInterface $entityManager,
         SessionInterface $session,
-        TokenGeneratorInterface $tokenGenerator,
+        CreateUserFactory $userFactory,
         SendMail $sendMail
     ) {
         $this->entityManager = $entityManager;
         $this->session = $session;
-        $this->tokenGenerator = $tokenGenerator;
+        $this->userFactory = $userFactory;
         $this->sendMail = $sendMail;
         parent::__construct($formFactory);
     }
@@ -51,29 +48,13 @@ class RegistrationHandler extends AbstractHandler
 
     protected function process(): void
     {
-        /** @var RegistrationDTO $dto */
-        $dto = $this->form->getData();
-
-        /** @var string $email */
-        $email = $dto->getEmail();
-
-        /** @var string $plainPassword */
-        $plainPassword = $dto->getPassword();
-
-        $registrationToken = $this->tokenGenerator->generateToken();
-        $user = new User();
-        $user
-            ->setEmail($email)
-            ->setRegistrationToken($registrationToken)
-            ->setPassword($plainPassword)
-            ->setAccountMustBeVerifiedBefore((new DateTimeImmutable('now'))->add(new DateInterval("P1D")))
-            ->setIsVerified(false);
+        $user = $this->userFactory->build($this->form->getData());
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
         /** @var DateTimeImmutable $tokenLifeDateTime */
-        $tokenLifeDateTime =  $user->getAccountMustBeVerifiedBefore();
+        $tokenLifeDateTime = $user->getAccountMustBeVerifiedBefore();
 
         $this->sendMail->send([
             'recipient_email' => $user->getEmail(),
@@ -81,7 +62,7 @@ class RegistrationHandler extends AbstractHandler
             'html_template' => 'emails/registration.html.twig',
             'context' => [
                 'userId' => $user->getId(),
-                'registrationToken' => $registrationToken,
+                'registrationToken' => $user->getRegistrationToken(),
                 'tokenLifeTime' => $tokenLifeDateTime->format('d/m/Y à H:i')
             ]
         ]);
