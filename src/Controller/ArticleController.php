@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
+    /** @var HandlerFactory $handlerFactory */
     private $handlerFactory;
 
     public function __construct(HandlerFactory $handlerFactory)
@@ -38,7 +39,7 @@ class ArticleController extends AbstractController
         $handler = $this->handlerFactory->createHandler(CreateArticleHandler::class);
         $formOptions = ["form_options" => ["user_role" => $user->getRoles()]];
         if ($handler->handle($request, null, null, $formOptions)) {
-            return new RedirectResponse("app_user_account_home");
+            return $this->redirectToRoute("app_user_account_home");
         }
 
         return $this->render("article/create_article.html.twig", [
