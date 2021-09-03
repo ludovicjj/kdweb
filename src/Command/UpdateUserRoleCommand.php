@@ -119,7 +119,8 @@ class UpdateUserRoleCommand extends Command
             "SELECT USER ROLE",
             [
                 'ROLE_USER',
-                'ROLE_ADMIN'
+                'ROLE_ADMIN',
+                'ROLE_WRITER'
             ],
             'ROLE_USER'
         );
