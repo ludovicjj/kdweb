@@ -2,10 +2,28 @@
 
 {% block body %}
     <main class="container mt-3">
-        <h1>Creation d'un article</h1>
+        {% if isEdit is not defined %}
+            <h1>Creation d'un article</h1>
+        {% else %}
+            <h1>Edition d'un article</h1>
+        {% endif %}
 
         {{ form_start(article_form) }}
-        {{ form_widget(article_form) }}
+        {{ form_row(article_form.title) }}
+        {{ form_row(article_form.content) }}
+        {{ form_row(article_form.categories) }}
+
+
+        {{ form_label(article_form.picture) }}
+        {% if pictureName is defined %}
+            <div class="mb-3">
+                <img src="{{ asset("uploads/"  ~ pictureName) }}" alt="article_picture">
+            </div>
+        {% endif %}
+        {{ form_errors(article_form.picture) }}
+        {{ form_widget(article_form.picture) }}
+
+        {{ form_row(article_form.publish) }}
         {{ form_end(article_form) }}
     </main>
 {% endblock %}
