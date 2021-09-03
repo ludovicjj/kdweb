@@ -15,6 +15,7 @@ Projet fil rouge pour tester les sujets suivants :
 - [x] Ajouter la fonctionnalité [remember me](https://symfony.com/doc/current/security/remember_me.html)
 - [x] Permettre à l'utilisateur de modifier son mot de passe
 - [x] Mise en place d'un captcha avec [HCaptcha](https://www.hcaptcha.com/)
+- [x] [Personnalisation des pages d'erreurs](https://symfony.com/doc/current/controller/error_pages.html)
 
 ## Fixtures
 
