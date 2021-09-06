@@ -73,7 +73,7 @@ class ArticleController extends AbstractController
 
         $handler = $this->handlerFactory->createHandler(EditArticleHandler::class);
 
-        if ($handler->handle($request, $dto)) {
+        if ($handler->handle($request, $dto, $article)) {
             return $this->redirectToRoute("app_user_account_home");
         }
 
