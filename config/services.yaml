@@ -51,6 +51,7 @@ services:
     App\EventListener\ArticleListener:
         tags:
             - { name: 'doctrine.orm.entity_listener', event: 'prePersist', entity: 'App\Entity\Article'}
+            - { name: 'doctrine.orm.entity_listener', event: 'preUpdate', entity: 'App\Entity\Article'}
 
     App\Handler\:
         resource: '../src/Handler/'

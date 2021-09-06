@@ -49,6 +49,13 @@ class ArticleListener
         ;
     }
 
+    public function preUpdate(Article $article, LifecycleEventArgs $event): void
+    {
+        $article
+            ->setEditedAt(new DateTimeImmutable("now"))
+            ->setSlug($this->makeArticleSlug($article));
+    }
+
     private function makeArticleSlug(Article $article): string
     {
         /** @var string $title */
