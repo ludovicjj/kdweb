@@ -54,8 +54,8 @@ class EditArticleDTO
      * @param UploadedFile|null $picture
      */
     public function __construct(
-        ?string $title = null,
-        ?string $content = null,
+        ?string $title,
+        ?string $content,
         $categories = null,
         UploadedFile $picture = null
     )
@@ -71,9 +71,19 @@ class EditArticleDTO
         return $this->title;
     }
 
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
     public function getContent()
     {
         return $this->content;
+    }
+
+    public function setContent(string $content): void
+    {
+        $this->content = $content;
     }
 
     public function getCategories()
@@ -97,5 +107,13 @@ class EditArticleDTO
     public function getPicture()
     {
         return $this->picture;
+    }
+
+    /**
+     * @param UploadedFile|null $picture
+     */
+    public function setPicture(?UploadedFile $picture): void
+    {
+        $this->picture = $picture;
     }
 }
