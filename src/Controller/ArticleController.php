@@ -6,10 +6,10 @@ namespace App\Controller;
 use App\Factory\DTO\EditArticleDTOFactory;
 use App\Form\EditArticleType;
 use App\Handler\CreateArticleHandler;
+use App\Handler\EditArticleHandler;
 use App\HandlerFactory\HandlerFactory;
 use App\Repository\ArticleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use LogicException;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,18 +20,16 @@ class ArticleController extends AbstractController
     /** @var HandlerFactory $handlerFactory */
     private $handlerFactory;
 
+    /** @var ArticleRepository $articleRepository */
     private $articleRepository;
-    private $formFactory;
 
     public function __construct(
         HandlerFactory $handlerFactory,
-        ArticleRepository $articleRepository,
-        FormFactoryInterface $formFactory
+        ArticleRepository $articleRepository
     )
     {
         $this->handlerFactory = $handlerFactory;
         $this->articleRepository = $articleRepository;
-        $this->formFactory = $formFactory;
     }
 
     /**
@@ -72,17 +70,16 @@ class ArticleController extends AbstractController
         $article = $this->articleRepository->find($articleId);
 
         $dto = EditArticleDTOFactory::build($article);
-        $picture = $article->getPicture();
 
-        $form = $this->formFactory->create(EditArticleType::class, $dto)->handleRequest($request);
+        $handler = $this->handlerFactory->createHandler(EditArticleHandler::class);
 
-        if ($form->isSubmitted()) {
-            dd($form->getData());
+        if ($handler->handle($request, $dto)) {
+            return $this->redirectToRoute("app_user_account_home");
         }
 
         return $this->render('article/create_article.html.twig', [
-           "article_form" => $form->createView(),
-            "pictureName" => $picture->getPictureName(),
+            "article_form" => $handler->createView(),
+            "pictureName" => $article->getPicture()->getPictureName(),
             "isEdit" => true
         ]);
     }
