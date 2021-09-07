@@ -4,7 +4,6 @@
 namespace App\Controller;
 
 use App\Factory\DTO\EditArticleDTOFactory;
-use App\Form\EditArticleType;
 use App\Handler\CreateArticleHandler;
 use App\Handler\EditArticleHandler;
 use App\HandlerFactory\HandlerFactory;
@@ -41,7 +40,7 @@ class ArticleController extends AbstractController
      */
     public function create(Request $request): Response
     {
-        $this->denyAccessUnlessGranted("ROLE_USER");
+        $this->denyAccessUnlessGranted(ArticleVoter::CREATE);
         $user = $this->getUser();
 
         if ($user === null) {
