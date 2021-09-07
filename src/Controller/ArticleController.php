@@ -9,10 +9,12 @@ use App\Handler\CreateArticleHandler;
 use App\Handler\EditArticleHandler;
 use App\HandlerFactory\HandlerFactory;
 use App\Repository\ArticleRepository;
+use App\Voter\ArticleVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use LogicException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
@@ -64,10 +66,15 @@ class ArticleController extends AbstractController
      */
     public function edit(Request $request)
     {
-        $this->denyAccessUnlessGranted("ROLE_USER");
-
         $articleId = $request->attributes->get("article_id");
         $article = $this->articleRepository->find($articleId);
+
+        if ($article === null) {
+            throw new NotFoundHttpException("Not found article");
+        }
+
+
+        $this->denyAccessUnlessGranted(ArticleVoter::EDIT, $article);
 
         $dto = EditArticleDTOFactory::build($article);
 
