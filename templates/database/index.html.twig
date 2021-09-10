@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <main class="container mt-3">
+
+        <h1>Back-Up database</h1>
+        <form method="post" action="{{ path("send_database_back_up") }}">
+            <button type="submit" class="btn btn-primary">Download back-up database</button>
+        </form>
+
+    </main>
+{% endblock %}
