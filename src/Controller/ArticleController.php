@@ -89,4 +89,19 @@ class ArticleController extends AbstractController
             "isEdit" => true
         ]);
     }
+
+    /**
+     * @Route(
+     *     {
+     *          "fr": "/articles/lire/{id}",
+     *          "en": "/articles/read/{id}"
+     *     },
+     *     name="app_read_article",
+     *     methods={"GET"}
+     * )
+     */
+    public function read()
+    {
+        dd('hello world');
+    }
 }
