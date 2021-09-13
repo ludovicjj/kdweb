@@ -7,14 +7,14 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-#    RewriteCond %{HTTP:Accept-Language} ^fr.*$ [NC]
-#    RewriteRule ^$ /fr [L,R=301]
-#
-#    RewriteCond %{HTTP:Accept-Language} ^en.*$ [NC]
-#    RewriteRule ^$ /en [L,R=301]
-#
-#    RewriteCond %{HTTP:Accept-Language} ^.*$ [NC]
-#    RewriteRule ^$ /fr [L,R=301]
+    RewriteCond %{HTTP:Accept-Language} ^fr.*$ [NC]
+    RewriteRule ^$ /fr [L,R=301]
+
+    RewriteCond %{HTTP:Accept-Language} ^en.*$ [NC]
+    RewriteRule ^$ /en [L,R=301]
+
+    RewriteCond %{HTTP:Accept-Language} ^.*$ [NC]
+    RewriteRule ^$ /fr [L,R=301]
 
     RewriteCond %{REQUEST_URI}::$0 ^(/.+)/(.*)::\2$
     RewriteRule .* - [E=BASE:%1]
