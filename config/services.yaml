@@ -12,6 +12,8 @@ parameters:
     app.hcaptcha_private_key: '%env(HCAPTCHA_PRIVATE_KEY)%'
     app.discord_client_id: '%env(DISCORD_CLIENT_ID)%'
     app.discord_client_secret: '%env(DISCORD_CLIENT_SECRET)%'
+    app.supported_locales: 'en|fr'
+    app.default_locale: '%kernel.default_locale%'
 services:
     # default configuration for services in *this* file
     _defaults:
