@@ -13,6 +13,7 @@ class ArticleVoter extends Voter
     private const CAN_CREATE_ROLE = "ROLE_WRITER";
     public const CREATE = "create";
     public const EDIT = "edit";
+    public const READ = "read";
 
     /** @var RoleHierarchyInterface $roleHierarchy */
     private $roleHierarchy;
@@ -24,7 +25,7 @@ class ArticleVoter extends Voter
 
     protected function supports(string $attribute, $subject): bool
     {
-        if (!in_array($attribute, [self::EDIT, self::CREATE])) {
+        if (!in_array($attribute, [self::EDIT, self::CREATE, self::READ])) {
             return false;
         }
 
@@ -50,6 +51,8 @@ class ArticleVoter extends Voter
                 return $this->canCreate($user);
             case self::EDIT:
                 return $this->canEdit($article, $user);
+            case self::READ:
+                return $this->canRead();
         }
 
         throw new \LogicException('This code should not be reached!');
@@ -76,5 +79,10 @@ class ArticleVoter extends Voter
     private function canEdit(Article $article, User $user): bool
     {
         return $article->getAuthor() === $user->getAuthor();
+    }
+
+    private function canRead(): bool
+    {
+        return true;
     }
 }
