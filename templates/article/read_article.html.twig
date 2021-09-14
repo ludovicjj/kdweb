@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% trans_default_domain "articles_content" %}
+
+{% block title %}
+    {{ 'articles.read.title'|trans }}
+{% endblock %}
+
+{% block body %}
+    {{ include('_partials/_flashbag.html.twig') }}
+    <article class="container text-center my-3">
+        <header>
+            <h1>
+                {{ article.title }}
+            </h1>
+        </header>
+        <section>
+            <p>
+                {{ article.content }}
+            </p>
+            <p>
+                {{ "articles.read.html_text"|trans({'%username%': username})|raw }}
+            </p>
+            <p>
+                {{ "articles.read.end"|trans }}
+            </p>
+        </section>
+    </article>
+{% endblock %}
