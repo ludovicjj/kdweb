@@ -1,0 +1,5 @@
+articles:
+    read:
+        title: "Read an article"
+        html_text: 'Thanks for reading <span class="text-warning">%username%</span>'
+        end: "The end"
