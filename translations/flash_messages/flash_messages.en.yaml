@@ -1,0 +1,4 @@
+flash:
+    read:
+        info: 'Hello %username%, you actually read an article.'
+        success: "If you can read this message then all work fine !"

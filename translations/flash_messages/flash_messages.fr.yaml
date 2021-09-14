@@ -1,0 +1,4 @@
+flash:
+    read:
+        info: 'Bonjour %username%, vous êtes en train de lire un article.'
+        success: "Si vous pouvez vous lire ce message tout est ok !"
