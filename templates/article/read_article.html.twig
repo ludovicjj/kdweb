@@ -18,6 +18,7 @@
             <p>
                 {{ article.content }}
             </p>
+            {{ changeLocale() }}
             <p>
                 {{ "articles.read.html_text"|trans({'%username%': username})|raw }}
             </p>
