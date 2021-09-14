@@ -3,3 +3,4 @@ articles:
         title: "Lire un article"
         html_text: 'Merci de ta lecture <span class="text-warning">%username%</span>'
         end: "Fin de l'article"
+        label: "Lire en anglais"
