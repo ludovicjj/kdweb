@@ -3,6 +3,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Factory\DTO\EditArticleDTOFactory;
 use App\Handler\CreateArticleHandler;
 use App\Handler\EditArticleHandler;
@@ -15,6 +16,7 @@ use LogicException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ArticleController extends AbstractController
 {
@@ -24,13 +26,18 @@ class ArticleController extends AbstractController
     /** @var ArticleRepository $articleRepository */
     private $articleRepository;
 
+    /** @var TranslatorInterface $translator */
+    private $translator;
+
     public function __construct(
         HandlerFactory $handlerFactory,
-        ArticleRepository $articleRepository
+        ArticleRepository $articleRepository,
+        TranslatorInterface $translator
     )
     {
         $this->handlerFactory = $handlerFactory;
         $this->articleRepository = $articleRepository;
+        $this->translator = $translator;
     }
 
     /**
@@ -99,9 +106,46 @@ class ArticleController extends AbstractController
      *     name="app_read_article",
      *     methods={"GET"}
      * )
+     * @param Request $request
      */
-    public function read()
+    public function read(Request $request)
     {
-        dd('hello world');
+        $this->denyAccessUnlessGranted(ArticleVoter::READ);
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($user === null) {
+            throw new LogicException("User cannot be null");
+        }
+
+        $article = $this->articleRepository->find($request->attributes->get("id"));
+        $username = $user->getAuthor()->getName();
+
+        if ($article === null) {
+            throw new NotFoundHttpException("Not found article");
+        }
+
+        $flashInfo = $this->translator->trans(
+            "flash.read.info",
+            [
+                "%username%" => $username
+            ],
+            "flash_messages"
+        );
+
+        $flashSuccess = $this->translator->trans(
+            "flash.read.success",
+            [],
+            "flash_messages"
+        );
+
+        $this->addFlash("info", $flashInfo);
+        $this->addFlash("success", $flashSuccess);
+
+        return $this->render("article/read_article.html.twig", [
+            "article" => $article,
+            "username" => $username
+        ]);
     }
 }
